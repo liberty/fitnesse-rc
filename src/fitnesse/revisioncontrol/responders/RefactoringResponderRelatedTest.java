@@ -1,4 +1,4 @@
-package fitnesse.responders.revisioncontrol;
+package fitnesse.revisioncontrol.responders;
 
 import fitnesse.responders.refactoring.DeletePageResponder;
 import static fitnesse.revisioncontrol.NullState.UNKNOWN;

@@ -1,4 +1,4 @@
-package fitnesse.responders.revisioncontrol;
+package fitnesse.revisioncontrol.responders;
 
 import fitnesse.revisioncontrol.NullState;
 import fitnesse.revisioncontrol.Results;

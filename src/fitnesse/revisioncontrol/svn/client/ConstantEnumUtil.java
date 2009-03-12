@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2006 Sabre Holdings. All Rights Reserved.
- */
-
 package fitnesse.revisioncontrol.svn.client;
 
 import java.lang.reflect.Field;

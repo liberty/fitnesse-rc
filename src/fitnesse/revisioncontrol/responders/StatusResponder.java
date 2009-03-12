@@ -1,4 +1,4 @@
-package fitnesse.responders.revisioncontrol;
+package fitnesse.revisioncontrol.responders;
 
 import fitnesse.html.HtmlTableListingBuilder;
 import fitnesse.html.HtmlTag;

@@ -1,4 +1,4 @@
-package fitnesse.responders.revisioncontrol;
+package fitnesse.revisioncontrol.responders;
 
 import fitnesse.responders.ResponderFactory;
 import static fitnesse.revisioncontrol.RevisionControlOperation.*;

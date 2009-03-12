@@ -1,4 +1,4 @@
-package fitnesse.responders.revisioncontrol;
+package fitnesse.revisioncontrol.responders;
 
 import static fitnesse.revisioncontrol.NullState.VERSIONED;
 import fitnesse.revisioncontrol.RevisionControlException;
