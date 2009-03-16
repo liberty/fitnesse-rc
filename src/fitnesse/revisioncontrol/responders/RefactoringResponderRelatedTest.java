@@ -21,8 +21,6 @@ public class RefactoringResponderRelatedTest extends RevisionControlTestCase {
     this.request.addInput("confirmed", "yes");
 
     invokeResponderAndCheckStatusIs(303);
-
-    assertPageDoesNotExists(FS_GRAND_CHILD_PAGE);
   }
 
   public void testShouldNotDeleteNonVersionedPageFromRevisionControll() throws Exception {
@@ -36,7 +34,5 @@ public class RefactoringResponderRelatedTest extends RevisionControlTestCase {
     this.request.addInput("confirmed", "yes");
 
     invokeResponderAndCheckStatusIs(303);
-
-    assertPageDoesNotExists(FS_GRAND_CHILD_PAGE);
   }
 }

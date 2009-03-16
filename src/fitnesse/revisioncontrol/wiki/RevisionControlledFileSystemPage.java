@@ -41,7 +41,7 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
     super.doCommit(data);
 
     if (getState().isUnderRevisionControl()) {
-//      revisioner.lock(getFileSystemPath());
+      revisioner.lock(getFileSystemPath());
     }
   }
 
@@ -61,8 +61,6 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
     if (pageToBeDeleted.getState().isUnderRevisionControl()) {
       pageToBeDeleted.execute(RevisionControlOperation.DELETE);
     }
-
-    super.removeChildPage(name);
   }
 
   @Override

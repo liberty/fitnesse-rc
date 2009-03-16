@@ -7,8 +7,6 @@ public abstract class NullState implements State {
 
   public static final NullState VERSIONED = new Versioned("Versioned");
   public static final NullState UNKNOWN = new Unknown("Unknown");
-  public static final NullState DELETED = new Deleted("Deleted");
-  public static final NullState ADDED = new Added("Added");
 
   protected NullState(String state) {
     this.state = state;
@@ -17,7 +15,6 @@ public abstract class NullState implements State {
   public boolean isCheckedOut() {
     return true;
   }
-
 }
 
 class Versioned extends NullState {
@@ -49,42 +46,6 @@ class Unknown extends NullState {
 
   public boolean isUnderRevisionControl() {
     return false;
-  }
-
-  public boolean isCheckedIn() {
-    return false;
-  }
-}
-
-class Deleted extends NullState {
-  protected Deleted(String state) {
-    super(state);
-  }
-
-  public RevisionControlOperation[] operations() {
-    return new RevisionControlOperation[]{CHECKIN, REVERT, STATUS};
-  }
-
-  public boolean isUnderRevisionControl() {
-    return true;
-  }
-
-  public boolean isCheckedIn() {
-    return true;
-  }
-}
-
-class Added extends NullState {
-  protected Added(String state) {
-    super(state);
-  }
-
-  public RevisionControlOperation[] operations() {
-    return new RevisionControlOperation[]{CHECKIN, REVERT, STATUS};
-  }
-
-  public boolean isUnderRevisionControl() {
-    return true;
   }
 
   public boolean isCheckedIn() {

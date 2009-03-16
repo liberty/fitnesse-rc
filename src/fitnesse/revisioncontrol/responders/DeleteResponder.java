@@ -5,11 +5,8 @@ import fitnesse.html.HtmlTag;
 import fitnesse.html.HtmlUtil;
 import fitnesse.revisioncontrol.OperationStatus;
 import fitnesse.revisioncontrol.Results;
-import fitnesse.revisioncontrol.RevisionControlException;
 import static fitnesse.revisioncontrol.RevisionControlOperation.DELETE;
 import fitnesse.revisioncontrol.wiki.RevisionControlledFileSystemPage;
-import fitnesse.wiki.FileSystemPage;
-import fitnesse.wiki.WikiPage;
 
 public class DeleteResponder extends RevisionControlResponder {
   public DeleteResponder() {
@@ -29,10 +26,6 @@ public class DeleteResponder extends RevisionControlResponder {
   protected void performOperation(RevisionControlledFileSystemPage page, HtmlTag tag) {
     Results results = page.execute(DELETE);
     makeResultsHtml(results, tag);
-
-    WikiPage parent = page.getParent();
-    if (parent instanceof FileSystemPage)
-      removeChildPage(parent, page);
   }
 
   private void makeResultsHtml(Results results, HtmlTag tag) {
@@ -41,14 +34,6 @@ public class DeleteResponder extends RevisionControlResponder {
     } else {
       HtmlTableListingBuilder table = new RevisionControlDetailsTableBuilder(results, rootPagePath);
       tag.add(table.getTable());
-    }
-  }
-
-  private void removeChildPage(WikiPage parent, FileSystemPage page) {
-    try {
-      parent.removeChildPage(page.getName());
-    } catch (Exception e) {
-      throw new RevisionControlException(e);
     }
   }
 }

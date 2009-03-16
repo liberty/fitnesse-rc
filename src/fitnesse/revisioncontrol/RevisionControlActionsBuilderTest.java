@@ -41,9 +41,11 @@ public class RevisionControlActionsBuilderTest extends TestCase {
   }
 
   public void testShouldNotMakeRevisionControlActionsIfPageIsNotEditableNorImported() throws Exception {
+    final String pageName = "NonEditablePage";
+
+    expect(revisionController.lock(ROOT + "/ExternalRoot/" + pageName)).andReturn(new Results());
     replay(revisionController);
 
-    final String pageName = "NonEditablePage";
     createRoot();
     final WikiPage testPage = root.addChildPage(pageName);
     final PageData pageData = testPage.getData();

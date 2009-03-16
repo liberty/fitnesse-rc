@@ -2,6 +2,7 @@ package fitnesse.revisioncontrol.responders;
 
 import fitnesse.revisioncontrol.Results;
 import fitnesse.revisioncontrol.RevisionControlException;
+import fitnesse.revisioncontrol.NullState;
 import static fitnesse.testutil.RegexTestCase.assertSubString;
 import static org.easymock.EasyMock.*;
 
@@ -20,8 +21,6 @@ public class DeleteResponderTest extends RevisionControlTestCase {
     this.request.setResource(FS_PARENT_PAGE + "." + FS_CHILD_PAGE + "." + FS_GRAND_CHILD_PAGE);
 
     invokeResponderAndCheckSuccessStatus();
-
-    assertPageDoesNotExists(FS_GRAND_CHILD_PAGE);
   }
 
   private void expectDeleteForPage(String page) throws Exception {
@@ -36,8 +35,6 @@ public class DeleteResponderTest extends RevisionControlTestCase {
     this.request.setResource(FS_PARENT_PAGE + "." + FS_CHILD_PAGE + "." + FS_GRAND_CHILD_PAGE);
 
     invokeResponderAndCheckSuccessStatus();
-    assertNull("Parent page had a reference to child file", this.childPage.getChildPage(FS_GRAND_CHILD_PAGE));
-    assertPageDoesNotExists(FS_GRAND_CHILD_PAGE);
   }
 
   public void testShouldDeleteAllChildPages() throws Exception {
@@ -47,9 +44,6 @@ public class DeleteResponderTest extends RevisionControlTestCase {
     createPage(FS_GRAND_CHILD_PAGE);
     this.request.setResource(FS_PARENT_PAGE);
     invokeResponderAndCheckSuccessStatus();
-    assertPageDoesNotExists(FS_GRAND_CHILD_PAGE);
-    assertPageDoesNotExists(FS_CHILD_PAGE);
-    assertPageDoesNotExists(FS_PARENT_PAGE);
   }
 
   public void testShouldReportErrorMsgIfDeleteOperationFails() throws Exception {

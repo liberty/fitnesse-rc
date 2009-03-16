@@ -97,11 +97,11 @@ public class SVNClient {
     return handler.logEntries;
   }
 
-  public void doRevert(File file, Results results) throws SVNException {
+  public void doRevert(File wcPath, Results results) throws SVNException {
     SVNWCClient client = clientManager.getWCClient();
     setEventHandler(results, client);
 
-    client.doRevert(new File[]{file}, SVNDepth.INFINITY, null);
+    client.doRevert(new File[]{wcPath}, SVNDepth.INFINITY, null);
 
     clearEventHandler(client);
 
@@ -120,34 +120,42 @@ public class SVNClient {
     return clientManager.getStatusClient().doStatus(wcPath, false);
   }
 
-  public void doLock(File[] wcPaths, String lockComment) throws SVNException {
-    clientManager.getWCClient().doLock(wcPaths, false, lockComment);
+  public void doLock(File wcPath, Results results) throws SVNException {
+    SVNWCClient client = clientManager.getWCClient();
+    setEventHandler(results, client);
+
+    client.doLock(getPathsFromRoot(wcPath), false, null);
+
+    clearEventHandler(client);
   }
 
-  public void doUnlock(File[] wcPaths) throws SVNException {
-    doUnlock(wcPaths, true);
+  public void doUnlock(File wcPath) throws SVNException {
+    SVNWCClient client = clientManager.getWCClient();
+    client.doUnlock(getPathsFromRoot(wcPath), true);
   }
 
-  public void doUnlock(File[] wcPaths, boolean isRecursive) throws SVNException {
-    File[] paths = wcPaths;
-    if (isRecursive) {
-      ArrayList<File> list = new ArrayList<File>();
+  public void doUnlock(File wcPath, Results results) throws SVNException {
+    SVNWCClient client = clientManager.getWCClient();
+    setEventHandler(results, client);
 
-      for (File wcPath : wcPaths) {
-        if (wcPath.isDirectory())
-          recurseDirectory(wcPath, list);
-        else
-          list.add(wcPath);
-      }
+    client.doUnlock(getPathsFromRoot(wcPath), true);
 
-      paths = (File[]) list.toArray();
-    }
-
-    clientManager.getWCClient().doUnlock(paths, true);
+    clearEventHandler(client);
   }
 
   public void doMove(File src, File dest) throws SVNException {
     clientManager.getMoveClient().doMove(src, dest);
+  }
+
+  private File[] getPathsFromRoot(File file) {
+    ArrayList<File> list = new ArrayList<File>();
+
+    if (file.isDirectory())
+      recurseDirectory(file, list);
+    else
+      list.add(file);
+
+    return list.toArray(new File[list.size()]);
   }
 
   private void recurseDirectory(File root, List<File> paths) {

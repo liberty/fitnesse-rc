@@ -15,6 +15,8 @@ public interface RevisionController {
 
   public NewRevisionResults update(String pagePath);
 
+  public Results lock(String pagePath);
+
   public StatusResults getStatus(String pagePath);
 
   public OperationStatus move(File src, File dest);

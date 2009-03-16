@@ -68,7 +68,7 @@ public class SVNRevisionController implements RevisionController {
       Results results = new SVNResults();
       debug("revert", file);
       client.doRevert(file, results);
-      update(pagePath);
+      client.doUnlock(file);
       return results;
     } catch (Exception e) {
       throw revisionControlException("revert", pagePath, e);
@@ -84,6 +84,30 @@ public class SVNRevisionController implements RevisionController {
       return results;
     } catch (Exception e) {
       throw revisionControlException("update", pagePath, e);
+    }
+  }
+
+  public Results lock(String pagePath) {
+    try {
+      final File file = getFileFromPath(pagePath);
+      Results results = new SVNResults();
+      debug("lock", file);
+      client.doLock(file, results);
+      return results;
+    } catch (Exception e) {
+      throw revisionControlException("lock", pagePath, e);
+    }
+  }
+
+  public Results unlock(String pagePath) {
+    try {
+      final File file = getFileFromPath(pagePath);
+      Results results = new SVNResults();
+      debug("unlock", file);
+      client.doUnlock(file, results);
+      return results;
+    } catch (Exception e) {
+      throw revisionControlException("unlock", pagePath, e);
     }
   }
 
