@@ -4,7 +4,6 @@ import fitnesse.ComponentFactory;
 import fitnesse.revisioncontrol.*;
 import fitnesse.wiki.*;
 
-import java.io.File;
 import java.util.List;
 import java.util.Properties;
 
@@ -13,27 +12,26 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
 
   private RevisionController revisioner;
 
-  protected RevisionControlledFileSystemPage(final String path, final String name, final WikiPage parent) throws Exception {
-    super(path, name, parent, new NullVersionsController());
+  public RevisionControlledFileSystemPage(final String path, final String name, 
+                                          final Properties properties) throws Exception {
+    super(path, name, null, new NullVersionsController());
+    this.revisioner = createRevisionController(properties);
   }
 
   protected RevisionControlledFileSystemPage(final String path, final String name, final WikiPage parent,
-                                             final RevisionController revisionController) throws Exception {
+                                          final RevisionController revisionController) throws Exception {
     super(path, name, parent, new NullVersionsController());
     this.revisioner = revisionController;
   }
 
-  public static WikiPage makeRoot(final String path, final String name,
-                                  final RevisionController revisionController) throws Exception {
-    return new RevisionControlledFileSystemPage(path, name, null, revisionController);
+  public RevisionControlledFileSystemPage(final String path, final String name,
+                                          final RevisionController revisionController) throws Exception {
+    this(path, name, null, revisionController);
   }
 
-  public static WikiPage makeRoot(final String path, final String name,
-                                  final Properties properties) throws Exception {
+  private static RevisionController createRevisionController(Properties properties) throws Exception {
     ComponentFactory factory = new ComponentFactory(properties);
-    RevisionController revisionController =
-      (RevisionController) factory.createComponent(REVISION_CONTROLLER);
-    return new RevisionControlledFileSystemPage(path, name, null, revisionController);
+    return (RevisionController) factory.createComponent(REVISION_CONTROLLER);
   }
 
   @Override
@@ -54,16 +52,12 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
   }
 
   private boolean isDeleted(PageData data) throws Exception {
-    return data.isEmpty() && getState().isDeleted();
+    return data.isEmpty() && revisioner != null && getState().isDeleted();
   }
 
   @Override
   protected WikiPage createChildPage(String name) throws Exception {
-    final RevisionControlledFileSystemPage newPage =
-      new RevisionControlledFileSystemPage(getFileSystemPath(), name, this, this.revisioner);
-    final File baseDir = new File(newPage.getFileSystemPath());
-    baseDir.mkdirs();
-    return newPage;
+    return new RevisionControlledFileSystemPage(getFileSystemPath(), name, this, revisioner);
   }
 
   @Override
@@ -71,7 +65,7 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
     RevisionControlledFileSystemPage pageToBeDeleted = (RevisionControlledFileSystemPage) getChildPage(name);
 
     if (pageToBeDeleted.getState().isUnderRevisionControl()) {
-      revisioner.delete(getAbsoluteFileSystemPath());
+      revisioner.delete(pageToBeDeleted.getAbsoluteFileSystemPath());
     }
 
     if (hasCachedSubpage(name))
@@ -93,14 +87,14 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
    */
 
   public <R> R execute(final RevisionControlOperation<R> operation) {
-    return operation.execute(this.revisioner, getAbsoluteFileSystemPath());
+    return operation.execute(revisioner, getAbsoluteFileSystemPath());
   }
 
   public boolean isExternallyRevisionControlled() {
-    return this.revisioner.isExternalRevisionControlEnabled();
+    return revisioner.isExternalRevisionControlEnabled();
   }
 
   public State getState() {
-    return this.revisioner.getState(getAbsoluteFileSystemPath());
+    return revisioner.getState(getAbsoluteFileSystemPath());
   }
 }

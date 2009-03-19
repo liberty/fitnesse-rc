@@ -31,7 +31,6 @@ public class SyncResponderTest extends RevisionControlTestCase {
 
   public void testShouldSyncronizeAllChildPage() throws Exception {
     expectStateOfPageIs(FS_PARENT_PAGE, VERSIONED);
-    expectStateOfPageIs(FS_CHILD_PAGE, VERSIONED);
     replay(revisionController);
 
     createPage(FS_GRAND_CHILD_PAGE);

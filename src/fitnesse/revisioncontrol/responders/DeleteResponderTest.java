@@ -2,7 +2,6 @@ package fitnesse.revisioncontrol.responders;
 
 import fitnesse.revisioncontrol.Results;
 import fitnesse.revisioncontrol.RevisionControlException;
-import static fitnesse.revisioncontrol.NullState.VERSIONED;
 import static fitnesse.testutil.RegexTestCase.assertSubString;
 import static org.easymock.EasyMock.*;
 
@@ -14,8 +13,6 @@ public class DeleteResponderTest extends RevisionControlTestCase {
   }
 
   public void testShouldAskRevisionControllerToDeletePage() throws Exception {
-    expectStateOfPageIs(FS_PARENT_PAGE, VERSIONED);
-    expectStateOfPageIs(FS_CHILD_PAGE, VERSIONED);
     expectDeleteForPage(FS_GRAND_CHILD_PAGE);
     replay(this.revisionController);
 
@@ -30,8 +27,6 @@ public class DeleteResponderTest extends RevisionControlTestCase {
   }
 
   public void testShouldRemovePageReferenceFromParentAfterDeletingChildPage() throws Exception {
-    expectStateOfPageIs(FS_PARENT_PAGE, VERSIONED);
-    expectStateOfPageIs(FS_CHILD_PAGE, VERSIONED);
     expectDeleteForPage(FS_GRAND_CHILD_PAGE);
     replay(this.revisionController);
 
@@ -42,8 +37,6 @@ public class DeleteResponderTest extends RevisionControlTestCase {
   }
 
   public void testShouldDeleteAllChildPages() throws Exception {
-    expectStateOfPageIs(FS_PARENT_PAGE, VERSIONED);
-    expectStateOfPageIs(FS_CHILD_PAGE, VERSIONED);
     expectDeleteForPage(FS_PARENT_PAGE);
     replay(this.revisionController);
 
@@ -67,7 +60,6 @@ public class DeleteResponderTest extends RevisionControlTestCase {
   }
 
   public void testAfterDeletingPageShouldProvideLinkToParentPage() throws Exception {
-    expectStateOfPageIs(FS_PARENT_PAGE, VERSIONED);
     expectDeleteForPage(FS_CHILD_PAGE);
     replay(this.revisionController);
 
@@ -92,7 +84,6 @@ public class DeleteResponderTest extends RevisionControlTestCase {
   }
 
   public void testShouldReportErrorMsgIfChildPagesAreLockedOrCheckedOut() throws Exception {
-    expectStateOfPageIs(FS_PARENT_PAGE, VERSIONED);
     final String errorMsg = "Child Page cannot be deleted from Revision Control";
     this.revisionController.delete(filePathFor(FS_PARENT_PAGE));
     expectLastCall().andThrow(new RevisionControlException(errorMsg));

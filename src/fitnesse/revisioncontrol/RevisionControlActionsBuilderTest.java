@@ -43,7 +43,7 @@ public class RevisionControlActionsBuilderTest extends TestCase {
   public void testShouldNotMakeRevisionControlActionsIfPageIsNotEditableNorImported() throws Exception {
     final String pageName = "NonEditablePage";
 
-    expect(revisionController.lock(ROOT + "/ExternalRoot/" + pageName)).andReturn(new Results());
+    expect(revisionController.lock(absolutePath(ROOT + "/ExternalRoot/" + pageName))).andReturn(new Results());
     replay(revisionController);
 
     createRoot();
@@ -59,7 +59,7 @@ public class RevisionControlActionsBuilderTest extends TestCase {
   public void testShouldMakeAddToRevisionControlActionForPages() throws Exception {
     final String pageName = "NotUnderVersionControlPage";
     expect(revisionController.isExternalRevisionControlEnabled()).andReturn(true);
-    expect(revisionController.getState(contentAndPropertiesFilePath(ROOT + "/ExternalRoot/" + pageName))).
+    expect(revisionController.getState(absolutePath(ROOT + "/ExternalRoot/" + pageName))).
       andReturn(UNKNOWN).atLeastOnce();
     replay(revisionController);
 
@@ -75,7 +75,7 @@ public class RevisionControlActionsBuilderTest extends TestCase {
   public void testShouldDisplayAssociatedRevisionControlActionForPages() throws Exception {
     final String pageName = "CheckedInPage";
     expect(revisionController.isExternalRevisionControlEnabled()).andReturn(true);
-    expect(revisionController.getState(contentAndPropertiesFilePath(ROOT + "/ExternalRoot/" + pageName))).andReturn(VERSIONED);
+    expect(revisionController.getState(absolutePath(ROOT + "/ExternalRoot/" + pageName))).andReturn(VERSIONED);
     replay(revisionController);
 
     List<WikiPageAction> actions = getActions(pageName);
@@ -90,7 +90,7 @@ public class RevisionControlActionsBuilderTest extends TestCase {
   public void testShouldNotDisplayRevertActionForLocalUnchangedPages() throws Exception {
     final String pageName = "UnchangedPage";
     expect(revisionController.isExternalRevisionControlEnabled()).andReturn(true);
-    expect(revisionController.getState(contentAndPropertiesFilePath(ROOT + "/ExternalRoot/" + pageName))).andReturn(VERSIONED);
+    expect(revisionController.getState(absolutePath(ROOT + "/ExternalRoot/" + pageName))).andReturn(VERSIONED);
     replay(revisionController);
 
     List<WikiPageAction> actions = getActions(pageName);
@@ -102,7 +102,7 @@ public class RevisionControlActionsBuilderTest extends TestCase {
   }
 
   private void createRoot() throws Exception {
-    root = RevisionControlledFileSystemPage.makeRoot(ROOT, "ExternalRoot", revisionController);
+    root = new RevisionControlledFileSystemPage(ROOT, "ExternalRoot", revisionController);
   }
 
   private List<WikiPageAction> getActions(String pageName) throws Exception {
@@ -120,7 +120,7 @@ public class RevisionControlActionsBuilderTest extends TestCase {
     assertActionIsNotPresent(pageName, actions, RevisionControlOperation.STATUS);
   }
 
-  private String contentAndPropertiesFilePath(String basePath) {
+  private String absolutePath(String basePath) {
     return new File(basePath).getAbsolutePath();
   }
 

@@ -86,7 +86,7 @@ public abstract class RevisionControlTestCase extends TestCase {
 
   protected void createExternalRoot() throws Exception {
     FileUtil.createDir(ROOT);
-    this.root = RevisionControlledFileSystemPage.makeRoot(ROOT, "ExternalRoot", this.revisionController);
+    this.root = new RevisionControlledFileSystemPage(ROOT, "ExternalRoot", this.revisionController);
     this.context = new FitNesseContext(this.root);
   }
 

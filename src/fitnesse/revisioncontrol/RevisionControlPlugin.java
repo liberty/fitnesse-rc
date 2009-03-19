@@ -4,9 +4,15 @@ import fitnesse.responders.ResponderFactory;
 import static fitnesse.revisioncontrol.RevisionControlOperation.*;
 import fitnesse.revisioncontrol.responders.*;
 import fitnesse.revisioncontrol.widgets.DeletedPageWidget;
+import fitnesse.revisioncontrol.wiki.RevisionControlledFileSystemPage;
 import fitnesse.wikitext.WidgetBuilder;
+import fitnesse.WikiPageFactory;
 
 public class RevisionControlPlugin {
+  public static void registerWikiPage(WikiPageFactory wikiPageFactory) {
+    wikiPageFactory.setWikiPageClass(RevisionControlledFileSystemPage.class);
+  }
+
   public static void registerResponders(ResponderFactory responderFactory) {
     responderFactory.addResponder(ADD.getQuery(), AddResponder.class);
     responderFactory.addResponder(SYNC.getQuery(), SyncResponder.class);
