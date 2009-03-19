@@ -5,7 +5,6 @@ import fitnesse.revisioncontrol.*;
 import fitnesse.wiki.*;
 
 import java.util.List;
-import java.util.Properties;
 
 public class RevisionControlledFileSystemPage extends FileSystemPage implements RevisionControllable {
   private static final String REVISION_CONTROLLER = "RevisionController";
@@ -13,9 +12,9 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
   private RevisionController revisioner;
 
   public RevisionControlledFileSystemPage(final String path, final String name, 
-                                          final Properties properties) throws Exception {
+                                          final ComponentFactory componentFactory) throws Exception {
     super(path, name, null, new NullVersionsController());
-    this.revisioner = createRevisionController(properties);
+    this.revisioner = createRevisionController(componentFactory);
   }
 
   protected RevisionControlledFileSystemPage(final String path, final String name, final WikiPage parent,
@@ -29,8 +28,7 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
     this(path, name, null, revisionController);
   }
 
-  private static RevisionController createRevisionController(Properties properties) throws Exception {
-    ComponentFactory factory = new ComponentFactory(properties);
+  private static RevisionController createRevisionController(ComponentFactory factory) throws Exception {
     return (RevisionController) factory.createComponent(REVISION_CONTROLLER);
   }
 
