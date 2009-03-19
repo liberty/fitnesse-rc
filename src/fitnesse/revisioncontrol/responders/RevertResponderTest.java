@@ -2,6 +2,7 @@ package fitnesse.revisioncontrol.responders;
 
 import fitnesse.revisioncontrol.Results;
 import fitnesse.revisioncontrol.RevisionControlException;
+import fitnesse.revisioncontrol.NullState;
 import static fitnesse.testutil.RegexTestCase.assertSubString;
 import static org.easymock.EasyMock.*;
 
@@ -43,6 +44,8 @@ public class RevertResponderTest extends RevisionControlTestCase {
   }
 
   public void testShouldOnlyRevertCurrentPage() throws Exception {
+    expectStateOfPageIs(FS_PARENT_PAGE, NullState.VERSIONED);
+    expectStateOfPageIs(FS_CHILD_PAGE, NullState.VERSIONED);
     expectRevertForPage(FS_CHILD_PAGE);
     replay(revisionController);
 

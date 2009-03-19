@@ -29,23 +29,9 @@ public class SyncResponderTest extends RevisionControlTestCase {
     assertSubString(errorMsg, response.getContent());
   }
 
-  public void testShouldStopSyncronizationIfAnyChildPageThrowErrors() throws Exception {
-    final String errorMsg = "Some error";
-    expect(revisionController.getState(filePathFor(FS_PARENT_PAGE))).andThrow(new RevisionControlException(errorMsg));
-    expect(revisionController.getState(filePathFor(FS_CHILD_PAGE))).andReturn(VERSIONED).anyTimes();
-    replay(revisionController);
-
-    createPage(FS_CHILD_PAGE);
-    createPage(FS_SIBLING_CHILD_PAGE, parentPage);
-    request.setResource(FS_PARENT_PAGE);
-
-    invokeResponderAndCheckSuccessStatus();
-
-    assertSubString(errorMsg, response.getContent());
-  }
-
   public void testShouldSyncronizeAllChildPage() throws Exception {
     expectStateOfPageIs(FS_PARENT_PAGE, VERSIONED);
+    expectStateOfPageIs(FS_CHILD_PAGE, VERSIONED);
     replay(revisionController);
 
     createPage(FS_GRAND_CHILD_PAGE);

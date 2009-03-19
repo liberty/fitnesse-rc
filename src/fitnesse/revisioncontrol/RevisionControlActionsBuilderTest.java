@@ -59,7 +59,8 @@ public class RevisionControlActionsBuilderTest extends TestCase {
   public void testShouldMakeAddToRevisionControlActionForPages() throws Exception {
     final String pageName = "NotUnderVersionControlPage";
     expect(revisionController.isExternalRevisionControlEnabled()).andReturn(true);
-    expect(revisionController.getState(contentAndPropertiesFilePath(ROOT + "/ExternalRoot/" + pageName))).andReturn(UNKNOWN);
+    expect(revisionController.getState(contentAndPropertiesFilePath(ROOT + "/ExternalRoot/" + pageName))).
+      andReturn(UNKNOWN).atLeastOnce();
     replay(revisionController);
 
     List<WikiPageAction> actions = getActions(pageName);

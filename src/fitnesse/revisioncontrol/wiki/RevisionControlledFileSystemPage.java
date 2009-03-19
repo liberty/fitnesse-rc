@@ -41,8 +41,20 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
     super.doCommit(data);
 
     if (getState().isUnderRevisionControl()) {
-      revisioner.lock(getFileSystemPath());
+      revisioner.lock(getAbsoluteFileSystemPath());
     }
+  }
+
+  @Override
+  public PageData makePageData() throws Exception {
+    PageData data = super.makePageData();
+    if (isDeleted(data))
+      data.setContent("!deletedpage");
+    return data;
+  }
+
+  private boolean isDeleted(PageData data) throws Exception {
+    return data.isEmpty() && getState().isDeleted();
   }
 
   @Override
@@ -59,8 +71,11 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
     RevisionControlledFileSystemPage pageToBeDeleted = (RevisionControlledFileSystemPage) getChildPage(name);
 
     if (pageToBeDeleted.getState().isUnderRevisionControl()) {
-      pageToBeDeleted.execute(RevisionControlOperation.DELETE);
+      revisioner.delete(getAbsoluteFileSystemPath());
     }
+
+    if (hasCachedSubpage(name))
+      children.remove(name);
   }
 
   @Override
@@ -78,11 +93,7 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
    */
 
   public <R> R execute(final RevisionControlOperation<R> operation) {
-    return operation.execute(this.revisioner, absolutePath(getFileSystemPath()));
-  }
-
-  private String absolutePath(final String fileName) {
-    return new File(fileName).getAbsolutePath();
+    return operation.execute(this.revisioner, getAbsoluteFileSystemPath());
   }
 
   public boolean isExternallyRevisionControlled() {
@@ -90,6 +101,6 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
   }
 
   public State getState() {
-    return this.revisioner.getState(absolutePath(getFileSystemPath()));
+    return this.revisioner.getState(getAbsoluteFileSystemPath());
   }
 }

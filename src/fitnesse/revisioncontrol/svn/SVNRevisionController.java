@@ -141,13 +141,9 @@ public class SVNRevisionController implements RevisionController {
   }
 
   public State getState(final String pagePath) {
-    try {
-      File file = getFileFromPath(pagePath);
-      debug("get state for", file);
-      return client.getState(file);
-    } catch (Exception e) {
-      throw revisionControlException("get state for", pagePath, e);
-    }
+    File file = getFileFromPath(pagePath);
+    debug("get state for", file);
+    return client.getState(file);
   }
 
   private void debug(String operation, File file) {

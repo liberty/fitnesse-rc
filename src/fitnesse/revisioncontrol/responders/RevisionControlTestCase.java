@@ -145,6 +145,6 @@ public abstract class RevisionControlTestCase extends TestCase {
   }
 
   protected void expectStateOfPageIs(String page, State state) throws Exception {
-    expect(revisionController.getState(filePathFor(page))).andReturn(state);
+    expect(revisionController.getState(filePathFor(page))).andReturn(state).atLeastOnce();
   }
 }

@@ -15,6 +15,10 @@ public abstract class NullState implements State {
   public boolean isCheckedOut() {
     return true;
   }
+
+  public boolean isDeleted() {
+    return false;
+  }
 }
 
 class Versioned extends NullState {

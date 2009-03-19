@@ -5,7 +5,7 @@ import static fitnesse.revisioncontrol.RevisionControlOperation.*;
 import fitnesse.revisioncontrol.State;
 
 public abstract class SVNState implements State {
-  String state;
+  private String state;
 
   public static final SVNState VERSIONED = new Versioned("Versioned");
   public static final SVNState UNKNOWN = new Unknown("Unknown");
@@ -16,8 +16,16 @@ public abstract class SVNState implements State {
     this.state = state;
   }
 
+  public boolean isUnderRevisionControl() {
+    return true;
+  }
+
   public boolean isCheckedOut() {
     return true;
+  }
+
+  public boolean isDeleted() {
+    return false;
   }
 
   @Override
@@ -39,10 +47,6 @@ class Versioned extends SVNState {
     return new RevisionControlOperation[]{CHECKIN, UPDATE, REVERT, DELETE, STATUS};
   }
 
-  public boolean isUnderRevisionControl() {
-    return true;
-  }
-
   public boolean isCheckedIn() {
     return true;
   }
@@ -57,6 +61,7 @@ class Unknown extends SVNState {
     return new RevisionControlOperation[]{ADD};
   }
 
+  @Override
   public boolean isUnderRevisionControl() {
     return false;
   }
@@ -80,11 +85,12 @@ class Deleted extends SVNState {
     return new RevisionControlOperation[]{CHECKIN, REVERT, STATUS};
   }
 
-  public boolean isUnderRevisionControl() {
+  public boolean isCheckedIn() {
     return true;
   }
 
-  public boolean isCheckedIn() {
+  @Override
+  public boolean isDeleted() {
     return true;
   }
 }
@@ -96,10 +102,6 @@ class Added extends SVNState {
 
   public RevisionControlOperation[] operations() {
     return new RevisionControlOperation[]{CHECKIN, REVERT, STATUS};
-  }
-
-  public boolean isUnderRevisionControl() {
-    return true;
   }
 
   public boolean isCheckedIn() {

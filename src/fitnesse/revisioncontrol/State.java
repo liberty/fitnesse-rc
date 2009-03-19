@@ -12,4 +12,6 @@ public interface State {
   boolean isCheckedOut();
 
   boolean isCheckedIn();
+
+  boolean isDeleted();
 }

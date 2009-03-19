@@ -180,15 +180,12 @@ public class SVNClient {
     }
   }
 
-  public State getState(File pagePath) throws SVNException {
+  public State getState(File pagePath) {
     SVNStatusType status;
     try {
       status = doLocalStatus(pagePath).getContentsStatus();
     } catch (SVNException e) {
-      if (e.getMessage().contains("is not a working copy")) {
-        return SVNState.UNKNOWN;
-      }
-      throw e;
+      return SVNState.UNKNOWN;
     }
 
     State state = this.states.get(status);
@@ -216,9 +213,9 @@ public class SVNClient {
   }
 
   private void initializeSVNStatusTypeToStateMap() {
+    this.states.put(null, SVNState.UNKNOWN);
     this.states.put(SVNStatusType.STATUS_UNVERSIONED, SVNState.UNKNOWN);
     this.states.put(SVNStatusType.STATUS_NONE, SVNState.UNKNOWN);
-    this.states.put(null, SVNState.UNKNOWN);
     this.states.put(SVNStatusType.STATUS_ADDED, SVNState.ADDED);
     this.states.put(SVNStatusType.STATUS_DELETED, SVNState.DELETED);
     this.states.put(SVNStatusType.STATUS_NORMAL, SVNState.VERSIONED);

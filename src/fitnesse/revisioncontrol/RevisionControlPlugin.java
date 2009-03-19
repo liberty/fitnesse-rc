@@ -1,7 +1,10 @@
-package fitnesse.revisioncontrol.responders;
+package fitnesse.revisioncontrol;
 
 import fitnesse.responders.ResponderFactory;
 import static fitnesse.revisioncontrol.RevisionControlOperation.*;
+import fitnesse.revisioncontrol.responders.*;
+import fitnesse.revisioncontrol.widgets.DeletedPageWidget;
+import fitnesse.wikitext.WidgetBuilder;
 
 public class RevisionControlPlugin {
   public static void registerResponders(ResponderFactory responderFactory) {
@@ -13,5 +16,9 @@ public class RevisionControlPlugin {
     responderFactory.addResponder(REVERT.getQuery(), RevertResponder.class);
     responderFactory.addResponder(UPDATE.getQuery(), UpdateResponder.class);
     responderFactory.addResponder(STATUS.getQuery(), StatusResponder.class);
+  }
+
+  public static void registerWikiWidgets(WidgetBuilder widgetBuilder) {
+    widgetBuilder.addWidgetClass(DeletedPageWidget.class);
   }
 }
