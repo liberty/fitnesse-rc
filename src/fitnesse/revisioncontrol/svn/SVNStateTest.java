@@ -19,10 +19,10 @@ public class SVNStateTest {
   }
 
   @Test
-  public void canPerformCheckInUpdateRevertAndDeleteOperationsIfStateIsVersioned() throws Exception {
+  public void canPerformCheckInUpdateRevertOperationsIfStateIsVersioned() throws Exception {
     final RevisionControlOperation[] operations = VERSIONED.operations();
-    assertOperationCount(operations, 5, VERSIONED);
-    assertContains(operations, CHECKIN, UPDATE, REVERT, DELETE, STATUS);
+    assertOperationCount(operations, 4, VERSIONED);
+    assertContains(operations, CHECKIN, UPDATE, REVERT, STATUS);
   }
 
   @Test

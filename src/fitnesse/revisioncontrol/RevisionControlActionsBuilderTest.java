@@ -3,7 +3,7 @@ package fitnesse.revisioncontrol;
 import static fitnesse.revisioncontrol.NullState.UNKNOWN;
 import static fitnesse.revisioncontrol.NullState.VERSIONED;
 import fitnesse.revisioncontrol.wiki.RevisionControlledFileSystemPage;
-import fitnesse.util.FileUtil;
+import util.FileUtil;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageAction;
@@ -68,7 +68,6 @@ public class RevisionControlActionsBuilderTest extends TestCase {
     assertActionIsNotPresent(pageName, actions, RevisionControlOperation.CHECKIN);
     assertActionIsNotPresent(pageName, actions, RevisionControlOperation.CHECKIN);
     assertActionIsNotPresent(pageName, actions, RevisionControlOperation.REVERT);
-    assertActionIsNotPresent(pageName, actions, RevisionControlOperation.DELETE);
     assertActionIsNotPresent(pageName, actions, RevisionControlOperation.STATUS);
   }
 
@@ -83,7 +82,6 @@ public class RevisionControlActionsBuilderTest extends TestCase {
     assertActionIsNotPresent(pageName, actions, RevisionControlOperation.CHECKIN);
     assertActionIsPresent(pageName, actions, RevisionControlOperation.UPDATE);
     assertActionIsNotPresent(pageName, actions, RevisionControlOperation.REVERT);
-    assertActionIsPresent(pageName, actions, RevisionControlOperation.DELETE);
     assertActionIsPresent(pageName, actions, RevisionControlOperation.STATUS);
   }
 
@@ -97,7 +95,6 @@ public class RevisionControlActionsBuilderTest extends TestCase {
     assertActionIsNotPresent(pageName, actions, RevisionControlOperation.CHECKIN);
     assertActionIsPresent(pageName, actions, RevisionControlOperation.UPDATE);
     assertActionIsNotPresent(pageName, actions, RevisionControlOperation.REVERT);
-    assertActionIsPresent(pageName, actions, RevisionControlOperation.DELETE);
     assertActionIsPresent(pageName, actions, RevisionControlOperation.STATUS);
   }
 
@@ -108,7 +105,7 @@ public class RevisionControlActionsBuilderTest extends TestCase {
   private List<WikiPageAction> getActions(String pageName) throws Exception {
     createRoot();
     WikiPage page = root.addChildPage(pageName);
-    return page.getActions();
+    return RevisionControlActionsBuilder.getRevisionControlActions(pageName, page.getData());
   }
 
   private void assertRevisionControlItemsNotDisplayed(String pageName, List<WikiPageAction> actions) throws Exception {
@@ -116,7 +113,6 @@ public class RevisionControlActionsBuilderTest extends TestCase {
     assertActionIsNotPresent(pageName, actions, RevisionControlOperation.CHECKIN);
     assertActionIsNotPresent(pageName, actions, RevisionControlOperation.UPDATE);
     assertActionIsNotPresent(pageName, actions, RevisionControlOperation.REVERT);
-    assertActionIsNotPresent(pageName, actions, RevisionControlOperation.DELETE);
     assertActionIsNotPresent(pageName, actions, RevisionControlOperation.STATUS);
   }
 

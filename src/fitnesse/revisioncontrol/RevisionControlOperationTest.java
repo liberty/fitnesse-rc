@@ -43,13 +43,6 @@ public class RevisionControlOperationTest {
   }
 
   @Test
-  public void deleteShouldDelegateCallToRevisionController() throws Exception {
-    expect(revisionController.delete(filePath)).andReturn(new Results());
-    replay(revisionController);
-    DELETE.execute(revisionController, filePath);
-  }
-
-  @Test
   public void revertShouldDelegateCallToRevisionController() throws Exception {
     expect(revisionController.revert(filePath)).andReturn(new Results());
     replay(revisionController);

@@ -76,8 +76,25 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
     String localPageName = PathParser.render(localPagePath);
 
     List<WikiPageAction> actions = super.getActions();
-    actions.addAll(RevisionControlActionsBuilder.getRevisionControlActions(localPageName, getData()));
+//    addRevisionControlActions(localPageName, actions);
+    replaceVersionsActionWithRevisionsAction(localPageName, actions);
     return actions;
+  }
+
+  private void addRevisionControlActions(String localPageName, List<WikiPageAction> actions) throws Exception {
+    actions.addAll(RevisionControlActionsBuilder.getRevisionControlActions(localPageName, getData()));
+  }
+
+  private void replaceVersionsActionWithRevisionsAction(String localPageName, List<WikiPageAction> actions) {
+    WikiPageAction revisionControlAction = new WikiPageAction(localPageName, "Revisions");
+    int position = actions.indexOf(new WikiPageAction(localPageName, "Versions"));
+    if (position > 0) {
+      actions.remove(position);
+      actions.add(position, revisionControlAction);
+    }
+    else {
+      actions.add(revisionControlAction);
+    }
   }
 
   /**

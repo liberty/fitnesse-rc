@@ -4,7 +4,7 @@ import fitnesse.revisioncontrol.NewRevisionResults;
 import fitnesse.revisioncontrol.OperationStatus;
 import fitnesse.revisioncontrol.RevisionControlDetail;
 import fitnesse.revisioncontrol.RevisionControlException;
-import static fitnesse.testutil.RegexTestCase.assertSubString;
+import static util.RegexTestCase.assertSubString;
 import static org.easymock.EasyMock.*;
 
 import java.util.Arrays;

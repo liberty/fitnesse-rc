@@ -27,7 +27,7 @@ class Versioned extends NullState {
   }
 
   public RevisionControlOperation[] operations() {
-    return new RevisionControlOperation[]{CHECKOUT, DELETE, UPDATE, STATUS};
+    return new RevisionControlOperation[]{CHECKOUT, UPDATE, STATUS};
   }
 
   public boolean isUnderRevisionControl() {

@@ -2,7 +2,7 @@ package fitnesse.revisioncontrol.responders;
 
 import fitnesse.revisioncontrol.Results;
 import fitnesse.revisioncontrol.RevisionControlException;
-import static fitnesse.testutil.RegexTestCase.assertSubString;
+import static util.RegexTestCase.assertSubString;
 import static org.easymock.EasyMock.*;
 
 public class RevertResponderTest extends RevisionControlTestCase {

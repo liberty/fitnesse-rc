@@ -44,7 +44,7 @@ class Versioned extends SVNState {
   }
 
   public RevisionControlOperation[] operations() {
-    return new RevisionControlOperation[]{CHECKIN, UPDATE, REVERT, DELETE, STATUS};
+    return new RevisionControlOperation[]{CHECKIN, UPDATE, REVERT, STATUS};
   }
 
   public boolean isCheckedIn() {
