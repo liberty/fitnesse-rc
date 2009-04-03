@@ -1,0 +1,115 @@
+<project name="fitnesse-rc" default="all" basedir=".">
+  <description>
+    fitnesse-rc is a revision control plugin for the FitNesse acceptance testing framework.
+  </description>
+
+  <property name="src" location="src"/>
+  <property name="classes" location="classes"/>
+  <property name="lib" location="lib"/>
+
+  <path id="classpath">
+    <pathelement path="classes"/>
+    <fileset dir="lib">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <target name="all" depends="testbuild"
+          description="cleans, compile the source, runs all unit test"/>
+
+  <target name="build" depends="clean, compile" description="clean, then compile the source"/>
+
+  <target name="testbuild" depends="clean, unit_test"
+          description="builds code from scratch, runs all the unit tests"/>
+
+  <target name="build_distribution" depends="zip_src, zip_bin"
+          description="builds a release distribution"/>
+
+  <target name="assemble_bin" depends="clean_dist, jar, copy_distribution"
+          description="createa a binary distribution"/>
+
+  <target name="copy_distribution" description="just copy the files into dist">
+    <tstamp/>
+    <copy todir="dist/fitnesse-rc">
+      <fileset dir="dist" includes="fitnesse-rc.jar"/>
+      <fileset dir=".">
+        <include name="lib/**"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="zip_bin" depends="assemble_bin" description="zip up the binary distribution">
+    <zip zipfile="${ant.project.name}${DSTAMP}.zip" basedir="dist" includes="fitnesse-rc/**"/>
+  </target>
+
+  <target name="zip_src" depends="clean_dist" description="Packages all the source into a .zip file">
+    <tstamp/>
+    <zip zipfile="fitnesse-rc-src${DSTAMP}.zip">
+      <fileset dir=".">
+        <include name="src/**"/>
+        <include name="lib/**"/>
+        <include name="build.xml"/>
+        <include name="BUILD_README.txt"/>
+      </fileset>
+    </zip>
+  </target>
+
+  <target name="jar" depends="build" description="generate the jar file">
+    <mkdir dir="dist"/>
+    <delete file="dist/fitnesse-rc.jar"/>
+
+    <jar jarfile="dist/fitnesse-rc.jar" basedir="classes">
+      <include name="**/*.class"/>
+      <exclude name="**/*Test.class"/>
+      <exclude name="**/*TestSuite.class"/>
+    </jar>
+    <delete dir="classes/files"/>    
+  </target>
+
+  <target name="compile" depends="init" description="compile the source (make)">
+    <javac srcdir="src" destdir="classes" classpathref="classpath" debug="true"/>
+  </target>
+
+  <target name="clean" description="delete everything in the classes directory">
+    <delete dir="classes"/>
+    <mkdir dir="classes"/>
+    <delete dir="test-results"/>
+  </target>
+
+  <target name="unit_test" depends="compile" description="run the unit tests">
+    <junit forkmode="once" fork="yes" printsummary="no" haltonfailure="yes" haltonerror="yes" dir="${basedir}">
+      <classpath refid="classpath"/>
+      <formatter type="xml" usefile="true"/>
+      <formatter type="plain" usefile="false"/>
+      <batchtest todir="test-results">
+        <fileset dir="src">
+          <include name="**/*Test.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+
+  <target name="clean_dist" description="clean out the distribution folder">
+    <mkdir dir="dist"/>
+    <delete>
+      <fileset dir="dist">
+        <include name="${ant.project.name}.jar"/>
+      </fileset>
+    </delete>
+    <delete dir="dist/fitnesse-rc"/>
+  </target>
+
+  <target name="init">
+    <fail message="Add your favorite fitnesse.jar to the lib directory">
+      <condition>
+        <not>
+          <available file="lib/fitnesse.jar"/>
+        </not>
+      </condition>
+    </fail>
+    <mkdir dir="classes"/>
+    <mkdir dir="test-results/cobertura"/>
+  </target>
+
+  <target name="release" depends="testbuild, build_distribution"/>
+</project>
