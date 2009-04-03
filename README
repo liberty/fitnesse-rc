@@ -1,0 +1,31 @@
+The fitnesse-rc project is a revision control plugin for the FitNesse acceptance testing framework. This allows
+FitNesse test pages to be managed in a revision control system.
+
+The plugin currently includes support for Subversion. Support for other revision control systems can be implemented
+and contributed to this project. 
+
+Building
+--------
+To use the fitnesse-rc plugin, first download the source and build using Ant. Before compiling, you must put a
+fitnesse.jar file into the lib directory. The build_distribution target in the build.xml file will generate a
+fitnesse-rc.jar file and will also copy dependent jar files into a dist directory (e.g. svknit.jar for Subversion).
+
+Running
+-------
+Include the generated fitnesse-rc.jar and dependent jar files in the classpath for FitNesse in the startup script.
+
+The revision control plugin is enabled using the plugin.properties file, which is usually in the root directory of the
+FitNesse installation. Edit the plugin.properties file and add a value to the "Plugins" property:
+
+   Plugins=fitnesse.revisioncontrol.RevisionControlPlugin
+
+The revision control plugin requires one revision controller to be specified, to integrate with the specific revision
+control system. For Subversion integration, add this line to plugins.properties:
+
+   RevisionController=fitnesse.revisioncontrol.svn.SVNRevisionController
+
+After adding the necessary jar files to the classpath and modifying plugins.properies, start FitNesse as usual. The
+"Versions" action button on each page should be replaced by a "Revisions" button. Clicking the "Revisions" button on a
+page invokes a responder with the availalble revision control actions for the page. The actions available depend on
+the revision control system and the current state of the page (new / not under revision control, already under revision
+control, modified locally, etc.).
