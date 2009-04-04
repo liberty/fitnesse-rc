@@ -8,6 +8,7 @@ import java.util.Properties;
 
 public class SVNRevisionController implements RevisionController {
   private final SVNClient client;
+  private boolean debug;
 
   public SVNRevisionController() {
     this(new Properties());
@@ -15,6 +16,7 @@ public class SVNRevisionController implements RevisionController {
 
   public SVNRevisionController(final Properties properties) {
     client = new SVNClient(properties);
+    debug = Boolean.parseBoolean(properties.getProperty("RevisionControlDebug"));
   }
 
   public Results add(final String pagePath) {
@@ -147,7 +149,8 @@ public class SVNRevisionController implements RevisionController {
   }
 
   private void debug(String operation, File file) {
-    System.out.println("About to " + operation + " page: " + file.getAbsolutePath());
+    if (debug)
+      System.out.println("About to " + operation + " page: " + file.getAbsolutePath());
   }
 
   private RevisionControlException revisionControlException(String operation, String pagePath, Exception e) {

@@ -29,7 +29,11 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
   }
 
   private static RevisionController createRevisionController(ComponentFactory factory) throws Exception {
-    return (RevisionController) factory.createComponent(REVISION_CONTROLLER);
+    RevisionController revisionController = (RevisionController) factory.createComponent(REVISION_CONTROLLER);
+    if (revisionController == null) {
+      throw new IllegalStateException("A RevisionController must be configured in the FitNesse properties");
+    }
+    return revisionController;
   }
 
   @Override
