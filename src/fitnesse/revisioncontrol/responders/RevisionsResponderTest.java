@@ -2,14 +2,11 @@ package fitnesse.revisioncontrol.responders;
 
 import static fitnesse.revisioncontrol.NullState.UNKNOWN;
 import static fitnesse.revisioncontrol.NullState.VERSIONED;
-import fitnesse.revisioncontrol.RevisionController;
 import fitnesse.revisioncontrol.RevisionControlOperation;
-import fitnesse.wiki.PageData;
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
 public class RevisionsResponderTest extends RevisionControlTestCase {
-  private final RevisionController revisionController = createMock(RevisionController.class);
-
   @Override
   protected void setUp() throws Exception {
     super.setUp();
@@ -22,24 +19,9 @@ public class RevisionsResponderTest extends RevisionControlTestCase {
   }
 
   public void testShouldNotMakeRevisionControlFormIfWikiIsNotUnderRevisionControl() throws Exception {
-    expect(revisionController.isExternalRevisionControlEnabled()).andReturn(false);
     replay(revisionController);
 
     request.setResource(root.getName());
-    invokeResponderAndCheckResponseContains();
-  }
-
-  public void testShouldNotMakeRevisionControlActionsIfPageIsNotEditableNorImported() throws Exception {
-    expectStateOfPageIs(FS_PARENT_PAGE, VERSIONED);
-    replay(revisionController);
-
-    createPage(FS_PARENT_PAGE);
-
-    final PageData pageData = parentPage.getData();
-    pageData.removeAttribute("Edit");
-    parentPage.commit(pageData);
-
-    request.setResource(FS_PARENT_PAGE);
     invokeResponderAndCheckResponseContains();
     assertRevisionControlItemsNotDisplayed();
   }
@@ -91,18 +73,29 @@ public class RevisionsResponderTest extends RevisionControlTestCase {
   private void assertRevisionControlItemsNotDisplayed() throws Exception {
     assertActionIsNotPresent(RevisionControlOperation.ADD);
     assertActionIsNotPresent(RevisionControlOperation.CHECKIN);
-    assertActionIsNotPresent(RevisionControlOperation.UPDATE);
+//    assertActionIsNotPresent(RevisionControlOperation.UPDATE);
     assertActionIsNotPresent(RevisionControlOperation.REVERT);
-    assertActionIsNotPresent(RevisionControlOperation.STATUS);
+//    assertActionIsNotPresent(RevisionControlOperation.STATUS);
   }
 
   private void assertActionIsPresent(RevisionControlOperation<?> operation) {
-    assertTrue(response.getContent().contains(operation.getDescription()));
-    assertTrue(response.getContent().contains(operation.getName()));
+    assertResponseContent(operation.getDescription(), true);
+    assertResponseContent(operation.getName(), true);
   }
 
   private void assertActionIsNotPresent(RevisionControlOperation<?> operation) {
-    assertFalse(response.getContent().contains(operation.getDescription()));
-    assertFalse(response.getContent().contains(operation.getName()));
+    assertResponseContent(operation.getDescription(), false);
+    assertResponseContent(operation.getName(), false);
+  }
+
+  private void assertResponseContent(String s, boolean shouldContain) {
+    if (shouldContain)
+      assertTrue("Response should contain '" + s + "'", responseContains(s));
+    else
+      assertFalse("Response should not contain '" + s + "'", responseContains(s));
+  }
+
+  private boolean responseContains(String s) {
+    return response.getContent().contains(s);
   }
 }
