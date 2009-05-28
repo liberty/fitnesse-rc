@@ -57,8 +57,8 @@ public class SVNClient {
     SVNCommitClient client = clientManager.getCommitClient();
     setEventHandler(results, client);
 
-    SVNCommitInfo svnInfo = client.doCommit(new File[]{wcPath}, false, commitMessage,
-      null, null, false, false, SVNDepth.INFINITY);
+    SVNCommitInfo svnInfo = client.doCommit(FileUtils.getPathsFromRoot(wcPath, false), 
+      false, commitMessage, null, null, false, false, SVNDepth.INFINITY);
 
     long newRevision = svnInfo.getNewRevision();
     if (newRevision == -1)
@@ -124,52 +124,27 @@ public class SVNClient {
     SVNWCClient client = clientManager.getWCClient();
     setEventHandler(results, client);
 
-    client.doLock(getPathsFromRoot(wcPath), false, null);
+    client.doLock(FileUtils.getPathsFromRoot(wcPath, false), false, null);
 
     clearEventHandler(client);
   }
 
   public void doUnlock(File wcPath) throws SVNException {
     SVNWCClient client = clientManager.getWCClient();
-    client.doUnlock(getPathsFromRoot(wcPath), true);
+    client.doUnlock(FileUtils.getPathsFromRoot(wcPath, false), true);
   }
 
   public void doUnlock(File wcPath, Results results) throws SVNException {
     SVNWCClient client = clientManager.getWCClient();
     setEventHandler(results, client);
 
-    client.doUnlock(getPathsFromRoot(wcPath), true);
+    client.doUnlock(FileUtils.getPathsFromRoot(wcPath, false), true);
 
     clearEventHandler(client);
   }
 
   public void doMove(File src, File dest) throws SVNException {
     clientManager.getMoveClient().doMove(src, dest);
-  }
-
-  private File[] getPathsFromRoot(File file) {
-    ArrayList<File> list = new ArrayList<File>();
-
-    if (file.isDirectory())
-      recurseDirectory(file, list);
-    else
-      list.add(file);
-
-    return list.toArray(new File[list.size()]);
-  }
-
-  private void recurseDirectory(File root, List<File> paths) {
-    File[] files = root.listFiles();
-    for (File file : files) {
-      if (file.getName().equals(".svn")) {
-        continue;
-      }
-
-      if (file.isDirectory())
-        recurseDirectory(file, paths);
-      else
-        paths.add(file);
-    }
   }
 
   private static class LogEntryHandler implements ISVNLogEntryHandler {

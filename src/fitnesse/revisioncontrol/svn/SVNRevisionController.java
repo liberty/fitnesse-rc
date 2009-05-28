@@ -154,7 +154,7 @@ public class SVNRevisionController implements RevisionController {
   }
 
   private RevisionControlException revisionControlException(String operation, String pagePath, Exception e) {
-    return new RevisionControlException("Unable to " + operation + " page: " + pagePath, e);
+    return new RevisionControlException("Unable to " + operation + " page '" + pagePath + "':" + e.getMessage(), e);
   }
 
   private boolean isUnderVersionControl(final File file) {

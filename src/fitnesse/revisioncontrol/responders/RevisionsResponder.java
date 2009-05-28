@@ -77,7 +77,7 @@ public class RevisionsResponder extends BasicResponder {
   }
 
   private HtmlTag makeCheckinContent() throws Exception {
-    TagGroup group = makeContent("Commit:", "Commit this sub-wiki to version control.");
+    TagGroup group = makeContent("Checkin:", "Put changes to this sub-wiki into version control.");
     group.add(makeCheckinForm());
     return group;
   }

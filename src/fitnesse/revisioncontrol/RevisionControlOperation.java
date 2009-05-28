@@ -31,7 +31,7 @@ public abstract class RevisionControlOperation<R> {
     };
 
   public static final RevisionControlOperation<Results> CHECKOUT =
-    new RevisionControlOperation<Results>("Checkout", "checkout", "c", "Get updates to this sub-wiki from version control.") {
+    new RevisionControlOperation<Results>("Checkout", "checkout", "c", "Get updates to this page from version control.") {
 
       @Override
       public Results execute(RevisionController revisionController, String pagePath) {
@@ -40,7 +40,7 @@ public abstract class RevisionControlOperation<R> {
     };
 
   public static final RevisionControlOperation<NewRevisionResults> CHECKIN =
-    new RevisionControlOperation<NewRevisionResults>("Checkin", "checkin", "i", "Put changes to this sub-wiki into version control.") {
+    new RevisionControlOperation<NewRevisionResults>("Checkin", "checkin", "i", "Put changes to this page into version control.") {
 
       @Override
       public NewRevisionResults execute(RevisionController revisionController, String pagePath) {
@@ -49,7 +49,7 @@ public abstract class RevisionControlOperation<R> {
     };
 
   public static final RevisionControlOperation<Results> REVERT =
-    new RevisionControlOperation<Results>("Revert", "revert", "", "Discard local changes to this sub-wiki.") {
+    new RevisionControlOperation<Results>("Revert", "revert", "", "Discard local changes to this page.") {
 
       @Override
       public Results execute(RevisionController revisionController, String pagePath) {
