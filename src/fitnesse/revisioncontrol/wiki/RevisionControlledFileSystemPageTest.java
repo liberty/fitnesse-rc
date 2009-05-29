@@ -2,6 +2,7 @@ package fitnesse.revisioncontrol.wiki;
 
 import fitnesse.revisioncontrol.Results;
 import static fitnesse.revisioncontrol.NullState.VERSIONED;
+import static fitnesse.revisioncontrol.NullState.UNKNOWN;
 import fitnesse.revisioncontrol.responders.RevisionControlTestCase;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPageAction;
@@ -39,8 +40,28 @@ public class RevisionControlledFileSystemPageTest extends RevisionControlTestCas
   }
 
   public void testDeleteChildPageWillDeleteChildFromRevisionControl() throws Exception {
+    expectStateOfPageIs(FS_PARENT_PAGE, VERSIONED);
     expectStateOfPageIs(FS_CHILD_PAGE, VERSIONED);
     expect(revisionController.delete(filePathFor(FS_CHILD_PAGE))).andReturn(new Results());
+    replay(revisionController);
+
+    createPage(FS_CHILD_PAGE);
+
+    parentPage.removeChildPage(FS_CHILD_PAGE);
+  }
+
+  public void testDeleteChildPageWillDelegateToSuperIfParentNotUnderRevisionControl() throws Exception {
+    expectStateOfPageIs(FS_PARENT_PAGE, UNKNOWN);
+    replay(revisionController);
+
+    createPage(FS_CHILD_PAGE);
+
+    parentPage.removeChildPage(FS_CHILD_PAGE);
+  }
+
+  public void testDeleteChildPageWillDelegateToSuperIfChildNotUnderRevisionControl() throws Exception {
+    expectStateOfPageIs(FS_PARENT_PAGE, VERSIONED);
+    expectStateOfPageIs(FS_CHILD_PAGE, UNKNOWN);
     replay(revisionController);
 
     createPage(FS_CHILD_PAGE);

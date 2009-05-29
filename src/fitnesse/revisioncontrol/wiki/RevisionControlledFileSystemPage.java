@@ -64,14 +64,22 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
 
   @Override
   public void removeChildPage(String name) throws Exception {
-    RevisionControlledFileSystemPage pageToBeDeleted = (RevisionControlledFileSystemPage) getChildPage(name);
+    RevisionControlledFileSystemPage childToBeDeleted = (RevisionControlledFileSystemPage) getChildPage(name);
 
-    if (pageToBeDeleted.getState().isUnderRevisionControl()) {
-      revisioner.delete(pageToBeDeleted.getAbsoluteFileSystemPath());
+    if (parentAndChildAreUnderRevisionControl(childToBeDeleted)) {
+      revisioner.delete(childToBeDeleted.getAbsoluteFileSystemPath());
+
+      if (hasCachedSubpage(name))
+        children.remove(name);
+    } else {
+      super.removeChildPage(name);
     }
+  }
 
-    if (hasCachedSubpage(name))
-      children.remove(name);
+  private boolean parentAndChildAreUnderRevisionControl(RevisionControlledFileSystemPage childPage) {
+    return getState().isUnderRevisionControl() &&
+      childPage.getState().isUnderRevisionControl() &&
+      childPage.getState().isCheckedIn();
   }
 
   @Override
@@ -85,9 +93,9 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
     return actions;
   }
 
-  private void addRevisionControlActions(String localPageName, List<WikiPageAction> actions) throws Exception {
-    actions.addAll(RevisionControlActionsBuilder.getRevisionControlActions(localPageName, getData()));
-  }
+//  private void addRevisionControlActions(String localPageName, List<WikiPageAction> actions) throws Exception {
+//    actions.addAll(RevisionControlActionsBuilder.getRevisionControlActions(localPageName, getData()));
+//  }
 
   private void replaceVersionsActionWithRevisionsAction(String localPageName, List<WikiPageAction> actions) {
     WikiPageAction revisionControlAction = new WikiPageAction(localPageName, "Revisions");
