@@ -196,6 +196,7 @@ public class SVNClient {
     this.states.put(SVNStatusType.STATUS_NORMAL, SVNState.VERSIONED);
     this.states.put(SVNStatusType.STATUS_MODIFIED, SVNState.VERSIONED);
     this.states.put(SVNStatusType.STATUS_REPLACED, SVNState.VERSIONED);
+    this.states.put(SVNStatusType.STATUS_IGNORED, SVNState.UNKNOWN);
     this.states.put(SVNStatusType.MERGED, SVNState.VERSIONED);
   }
 
