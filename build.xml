@@ -103,7 +103,7 @@
     <fail message="Add your favorite fitnesse.jar to the lib directory">
       <condition>
         <not>
-          <available file="lib/fitnesse.jar"/>
+	  <available classname="fitnesse.FitNesse" classpathref="classpath"/>
         </not>
       </condition>
     </fail>
