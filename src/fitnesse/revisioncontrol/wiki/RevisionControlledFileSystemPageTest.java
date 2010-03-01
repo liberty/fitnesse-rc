@@ -20,6 +20,7 @@ public class RevisionControlledFileSystemPageTest extends RevisionControlTestCas
 
   public void testCommitWillLockPageIfUnderRevisionControl() throws Exception {
     expectStateOfPageIs(FS_PARENT_PAGE, VERSIONED);
+    expect(revisionController.hasLocalLock(contentFilePathFor(FS_PARENT_PAGE))).andReturn(false);
     expect(revisionController.lock(filePathFor(FS_PARENT_PAGE))).andReturn(new Results());
     replay(revisionController);
 
@@ -27,6 +28,16 @@ public class RevisionControlledFileSystemPageTest extends RevisionControlTestCas
 
     parentPage.commit(parentPage.getData());
   }
+
+  public void testCommitWillNotLockPageIfUnderRevisionControlButAlreadyLocked() throws Exception {
+    expectStateOfPageIs(FS_PARENT_PAGE, VERSIONED);
+    expect(revisionController.hasLocalLock(contentFilePathFor(FS_PARENT_PAGE))).andReturn(true);
+    replay(revisionController);
+
+    createPage(FS_PARENT_PAGE);
+    parentPage.commit(parentPage.getData());
+  }
+
 
   public void testCreateChildPageWillCreateRevisionControlledPage() throws Exception {
     replay(revisionController);

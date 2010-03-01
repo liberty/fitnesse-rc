@@ -30,7 +30,7 @@ public class RevisionControlOperationTest {
 
   @Test
   public void checkinShouldDelegateCallToRevisionController() throws Exception {
-    expect(revisionController.checkin(filePath)).andReturn(new NewRevisionResults());
+    expect(revisionController.checkin(filePath, "")).andReturn(new NewRevisionResults());
     replay(revisionController);
     CHECKIN.execute(revisionController, filePath);
   }

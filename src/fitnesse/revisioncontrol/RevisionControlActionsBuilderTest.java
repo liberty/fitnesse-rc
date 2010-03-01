@@ -3,6 +3,7 @@ package fitnesse.revisioncontrol;
 import static fitnesse.revisioncontrol.NullState.UNKNOWN;
 import static fitnesse.revisioncontrol.NullState.VERSIONED;
 import fitnesse.revisioncontrol.wiki.RevisionControlledFileSystemPage;
+import fitnesse.wiki.FileSystemPage;
 import util.FileUtil;
 import fitnesse.wiki.PageData;
 import fitnesse.wiki.WikiPage;
@@ -43,6 +44,7 @@ public class RevisionControlActionsBuilderTest extends TestCase {
   public void testShouldNotMakeRevisionControlActionsIfPageIsNotEditableNorImported() throws Exception {
     final String pageName = "NonEditablePage";
 
+    expect(revisionController.hasLocalLock(absolutePath(ROOT + "/ExternalRoot/" + pageName + FileSystemPage.contentFilename))).andReturn(false);
     expect(revisionController.lock(absolutePath(ROOT + "/ExternalRoot/" + pageName))).andReturn(new Results());
     replay(revisionController);
 

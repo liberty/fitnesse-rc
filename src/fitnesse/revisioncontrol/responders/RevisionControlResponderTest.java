@@ -9,6 +9,9 @@ import fitnesse.revisioncontrol.RevisionControlOperation;
 import fitnesse.revisioncontrol.RevisionController;
 import fitnesse.revisioncontrol.wiki.RevisionControlledFileSystemPage;
 import fitnesse.wiki.*;
+
+import java.util.Map;
+
 import static org.easymock.EasyMock.*;
 
 public class RevisionControlResponderTest extends RevisionControlTestCase {
@@ -83,10 +86,10 @@ public class RevisionControlResponderTest extends RevisionControlTestCase {
   private class TestRevisionControlResponder extends RevisionControlResponder {
     public TestRevisionControlResponder() {
       super(new RevisionControlOperation(RevisionControlResponderTest.this.revisionControlOperation, "", "") {
-        @Override
-        public OperationStatus execute(final RevisionController revisionController, final String pagePath) {
+         @Override
+         public Object execute(RevisionController revisionController, String pagePath, Map args) {
           return OperationStatus.SUCCESS;
-        }
+         }
       });
     }
 

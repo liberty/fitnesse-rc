@@ -5,7 +5,7 @@ import java.io.File;
 public interface RevisionController {
   public Results add(String pagePath);
 
-  public NewRevisionResults checkin(String pagePath);
+  public NewRevisionResults checkin(String pagePath, String commitMessage);
 
   public Results checkout(String pagePath);
 
@@ -24,4 +24,6 @@ public interface RevisionController {
   public State getState(String pagePath);
 
   public boolean isExternalRevisionControlEnabled();
+
+   public boolean hasLocalLock(String pagePath);
 }

@@ -36,12 +36,12 @@ public class SVNRevisionController implements RevisionController {
     }
   }
 
-  public NewRevisionResults checkin(final String pagePath) {
+  public NewRevisionResults checkin(final String pagePath, String commitMessage) {
     try {
       File file = getFileFromPath(pagePath);
       NewRevisionResults results = new SVNNewRevisionResults();
       debug("checkin", file);
-      client.doCommit(file, "Auto Commit", results);
+      client.doCommit(file, (commitMessage == null || commitMessage.isEmpty()) ? "Auto Commit" : commitMessage, results);
       return results;
     } catch (Exception e) {
       throw revisionControlException("checkin", pagePath, e);
@@ -125,6 +125,16 @@ public class SVNRevisionController implements RevisionController {
     }
   }
 
+   public boolean hasLocalLock(String pagePath) {
+      try {
+        final File file = getFileFromPath(pagePath);
+        debug("hasLocalLock", file);
+        return client.hasLocalLock(file);
+      } catch (Exception e) {
+        throw revisionControlException("hasLocalLock", pagePath, e);
+      }
+   }
+   
   public OperationStatus move(final File src, final File dest) {
     try {
       client.doMove(src, dest);
@@ -161,7 +171,7 @@ public class SVNRevisionController implements RevisionController {
     return getState(file.getAbsolutePath()).isUnderRevisionControl();
   }
 
-  class SVNResults extends Results {
+   class SVNResults extends Results {
     SVNResults() {
       setDetailLabels("Name", "Actions");
     }

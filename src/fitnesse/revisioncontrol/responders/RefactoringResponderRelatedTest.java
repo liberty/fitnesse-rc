@@ -12,6 +12,7 @@ public class RefactoringResponderRelatedTest extends RevisionControlTestCase {
     super.setUp();
     this.responder = new DeletePageResponder();
     expectStateOfPageIs(FS_GRAND_CHILD_PAGE, VERSIONED);
+    expectStateOfPageIs(FS_CHILD_PAGE, VERSIONED);
     expect(this.revisionController.delete(filePathFor(FS_GRAND_CHILD_PAGE))).andReturn(new Results());
     replay(this.revisionController);
 
@@ -26,6 +27,7 @@ public class RefactoringResponderRelatedTest extends RevisionControlTestCase {
   public void testShouldNotDeleteNonVersionedPageFromRevisionControl() throws Exception {
     this.responder = new DeletePageResponder();
     expectStateOfPageIs(FS_GRAND_CHILD_PAGE, UNKNOWN);
+    expectStateOfPageIs(FS_CHILD_PAGE, VERSIONED);    
     replay(this.revisionController);
 
     createPage(FS_GRAND_CHILD_PAGE);

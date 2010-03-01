@@ -18,7 +18,18 @@ public class RevertResponderTest extends RevisionControlTestCase {
     verify(revisionController);
   }
 
+   public void testShouldAskConfirmation() throws Exception {
+     createPage(FS_PARENT_PAGE);
+     request.setResource(FS_PARENT_PAGE);
+     replay(revisionController);
+     invokeResponderAndCheckSuccessStatus();
+     assertSubString("<H3>Are you sure you want to discard local changes to " + FS_PARENT_PAGE + "?</H3>", response.getContent());
+     assertSubString("<a href=\"" + FS_PARENT_PAGE + "?responder=revert&confirmed=yes\">Yes</a>", response.getContent());
+     assertSubString("<a href=\"" + FS_PARENT_PAGE +"\">No</a>", response.getContent());
+   }
+
   public void testShouldAskRevisionControllerToRevertPage() throws Exception {
+    request.addInput(RevertResponder.PARAM_CONFIRMED, "yes");
     expectRevertForPage(FS_PARENT_PAGE);
     replay(revisionController);
 
@@ -29,6 +40,7 @@ public class RevertResponderTest extends RevisionControlTestCase {
   }
 
   public void testShouldReportErrorMsgIfRevertOperationFails() throws Exception {
+    request.addInput(RevertResponder.PARAM_CONFIRMED, "yes");
     final String errorMsg = "Cannot revert files from Revision Control";
     revisionController.revert(filePathFor(FS_PARENT_PAGE));
     expectLastCall().andThrow(new RevisionControlException(errorMsg));
@@ -43,6 +55,7 @@ public class RevertResponderTest extends RevisionControlTestCase {
   }
 
   public void testShouldOnlyRevertCurrentPage() throws Exception {
+    request.addInput(RevertResponder.PARAM_CONFIRMED, "yes");
     expectRevertForPage(FS_CHILD_PAGE);
     replay(revisionController);
 

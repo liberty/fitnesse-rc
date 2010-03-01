@@ -4,7 +4,9 @@ import fitnesse.ComponentFactory;
 import fitnesse.revisioncontrol.*;
 import fitnesse.wiki.*;
 
+import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 public class RevisionControlledFileSystemPage extends FileSystemPage implements RevisionControllable {
   private static final String REVISION_CONTROLLER = "RevisionController";
@@ -40,7 +42,7 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
   public void doCommit(PageData data) throws Exception {
     super.doCommit(data);
 
-    if (getState().isUnderRevisionControl()) {
+    if (getState().isUnderRevisionControl() && !hasLocalLock()) {
       revisioner.lock(getAbsoluteFileSystemPath());
     }
   }
@@ -109,12 +111,18 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
     }
   }
 
+   /**
+    * @see fitnesse.revisioncontrol.RevisionControlOperation
+    */
+   public <R> R execute(final RevisionControlOperation<R> operation) {
+     return operation.execute(revisioner, getAbsoluteFileSystemPath());
+   }
+
   /**
    * @see fitnesse.revisioncontrol.RevisionControlOperation
    */
-
-  public <R> R execute(final RevisionControlOperation<R> operation) {
-    return operation.execute(revisioner, getAbsoluteFileSystemPath());
+  public <R> R execute(final RevisionControlOperation<R> operation, final Map<String, String> args) {
+    return operation.execute(revisioner, getAbsoluteFileSystemPath(), args);
   }
 
   public boolean isExternallyRevisionControlled() {
@@ -124,4 +132,17 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
   public State getState() {
     return revisioner.getState(getAbsoluteFileSystemPath());
   }
+
+   public boolean hasLocalLock() {
+      return revisioner.hasLocalLock(getAbsoluteFileSystemPathForContentFile());
+   }
+   
+   public String getAbsoluteFileSystemPathForContentFile() {
+     return new File(getFileSystemPath() + contentFilename).getAbsolutePath();
+   }
+
+   public String getAbsoluteFileSystemPathForPropertiesFile() {
+     return new File(getFileSystemPath() + propertiesFilename).getAbsolutePath();
+   }
+
 }

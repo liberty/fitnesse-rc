@@ -49,6 +49,15 @@ public class SVNEventActionTags {
     registerActionTag(SVNEventAction.MERGE_BEGIN, "Merge began", OK);
     registerActionTag(SVNEventAction.FOREIGN_MERGE_BEGIN, "Foreign merge began", OK);
     registerActionTag(SVNEventAction.UPGRADE, "Working copy upgraded", OK);
+    registerActionTag(SVNEventAction.PROPERTY_ADD, "Property Added", OK);
+    registerActionTag(SVNEventAction.PROPERTY_MODIFY, "Property Modified", OK);
+    registerActionTag(SVNEventAction.PROPERTY_DELETE, "Property Deleted", OK);
+    registerActionTag(SVNEventAction.PROPERTY_DELETE_NONEXISTENT, "Property Non Existent", WARNING);
+    registerActionTag(SVNEventAction.REVPROPER_SET, "Revision Property Set", OK);
+    registerActionTag(SVNEventAction.REVPROP_DELETE, "Revision Property Deleted", OK);
+    registerActionTag(SVNEventAction.MERGE_COMPLETE, "Merge Completed", OK);
+    registerActionTag(SVNEventAction.TREE_CONFLICT, "Tree Coflict", ALERT);
+    registerActionTag(SVNEventAction.FAILED_EXTERNAL, "Failed External", ALERT);
   }
 
   private static void registerActionTag(SVNEventAction action, String description, ActionStyle style) {

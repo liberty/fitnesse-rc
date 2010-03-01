@@ -57,7 +57,7 @@ public class SVNClient {
     SVNCommitClient client = clientManager.getCommitClient();
     setEventHandler(results, client);
 
-    SVNCommitInfo svnInfo = client.doCommit(FileUtils.getPathsFromRoot(wcPath, false), 
+    SVNCommitInfo svnInfo = client.doCommit(new File[] {wcPath},
       false, commitMessage, null, null, false, false, SVNDepth.INFINITY);
 
     long newRevision = svnInfo.getNewRevision();
@@ -147,7 +147,7 @@ public class SVNClient {
     clientManager.getMoveClient().doMove(src, dest);
   }
 
-  private static class LogEntryHandler implements ISVNLogEntryHandler {
+   private static class LogEntryHandler implements ISVNLogEntryHandler {
     public List<SVNLogEntry> logEntries = new ArrayList<SVNLogEntry>();
 
     public void handleLogEntry(SVNLogEntry logEntry) {
@@ -170,6 +170,16 @@ public class SVNClient {
     throwExceptionForUnhandledStatuses(status, pagePath);
     throw new RevisionControlException(pagePath + " is in an unknown state. Please update the file and try again.");
   }
+
+   public boolean hasLocalLock(File pagePath) {
+      SVNStatusType status;
+      try {
+         SVNStatus svnStatus = doLocalStatus(pagePath);
+         return svnStatus.getLocalLock() != null;
+      } catch (SVNException e) {
+         throw new RevisionControlException(pagePath + " is in an unknown state. Can not determine local lock ownership.");
+      }
+   }
 
   private void throwExceptionForUnhandledStatuses(final SVNStatusType status, final File fileName) {
     String errorMsg = this.errorMsgs.get(status);

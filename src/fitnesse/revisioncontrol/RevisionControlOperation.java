@@ -2,12 +2,17 @@ package fitnesse.revisioncontrol;
 
 import fitnesse.wiki.WikiPageAction;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public abstract class RevisionControlOperation<R> {
+  public static final String MESSAGE_ARG = "message";
+
   public static final RevisionControlOperation<Results> ADD =
     new RevisionControlOperation<Results>("Add", "addToRevisionControl", "a", "Add this sub-wiki to revision control") {
 
       @Override
-      public Results execute(RevisionController revisionController, String pagePath) {
+      public Results execute(RevisionController revisionController, String pagePath, Map<String, String> args) {
         return revisionController.add(pagePath);
       }
     };
@@ -16,7 +21,7 @@ public abstract class RevisionControlOperation<R> {
     new RevisionControlOperation<State>("Synchronize", "syncRevisionControl", "") {
 
       @Override
-      public State execute(RevisionController revisionController, String pagePath) {
+      public State execute(RevisionController revisionController, String pagePath, Map<String, String> args) {
         return revisionController.getState(pagePath);
       }
     };
@@ -25,7 +30,7 @@ public abstract class RevisionControlOperation<R> {
     new RevisionControlOperation<NewRevisionResults>("Update", "update", "u", "Update this sub-wiki from version control.") {
 
       @Override
-      public NewRevisionResults execute(RevisionController revisionController, String pagePath) {
+      public NewRevisionResults execute(RevisionController revisionController, String pagePath, Map<String, String> args) {
         return revisionController.update(pagePath);
       }
     };
@@ -34,17 +39,17 @@ public abstract class RevisionControlOperation<R> {
     new RevisionControlOperation<Results>("Checkout", "checkout", "c", "Get updates to this page from version control.") {
 
       @Override
-      public Results execute(RevisionController revisionController, String pagePath) {
+      public Results execute(RevisionController revisionController, String pagePath, Map<String, String> args) {
         return revisionController.checkout(pagePath);
       }
     };
 
   public static final RevisionControlOperation<NewRevisionResults> CHECKIN =
-    new RevisionControlOperation<NewRevisionResults>("Checkin", "checkin", "i", "Put changes to this page into version control.") {
+    new RevisionControlOperation<NewRevisionResults>("Checkin", "checkin", "i", "Put changes to this page into version control.", true) {
 
       @Override
-      public NewRevisionResults execute(RevisionController revisionController, String pagePath) {
-        return revisionController.checkin(pagePath);
+      public NewRevisionResults execute(RevisionController revisionController, String pagePath, Map<String, String> args) {
+        return revisionController.checkin(pagePath, args.containsKey(MESSAGE_ARG) ? args.get(MESSAGE_ARG) : "");
       }
     };
 
@@ -52,7 +57,7 @@ public abstract class RevisionControlOperation<R> {
     new RevisionControlOperation<Results>("Revert", "revert", "", "Discard local changes to this page.") {
 
       @Override
-      public Results execute(RevisionController revisionController, String pagePath) {
+      public Results execute(RevisionController revisionController, String pagePath, Map<String, String> args) {
         return revisionController.revert(pagePath);
       }
     };
@@ -61,7 +66,7 @@ public abstract class RevisionControlOperation<R> {
     new RevisionControlOperation<StatusResults>("Status", "getStatus", "t", "Get the status of this sub-wiki from version control.") {
 
       @Override
-      public StatusResults execute(RevisionController revisionController, String pagePath) {
+      public StatusResults execute(RevisionController revisionController, String pagePath, Map<String, String> args) {
         return revisionController.getStatus(pagePath);
       }
     };
@@ -69,17 +74,23 @@ public abstract class RevisionControlOperation<R> {
   private final String query;
   private final String accessKey;
   private final String name;
+  private final boolean allowComment;
   private String description;
 
   protected RevisionControlOperation(String name, String query, String accessKey) {
     this(name, query, accessKey, null);
   }
 
-  public RevisionControlOperation(String name, String query, String accessKey, String description) {
+   public RevisionControlOperation(String name, String query, String accessKey, String description) {
+     this(name, query, accessKey, description, false);
+   }
+
+  public RevisionControlOperation(String name, String query, String accessKey, String description, boolean allowComment) {
     this.name = name;
     this.query = query;
     this.accessKey = accessKey;
     this.description = description;
+    this.allowComment = allowComment;
   }
 
   public WikiPageAction makeAction(String pageName) {
@@ -101,6 +112,10 @@ public abstract class RevisionControlOperation<R> {
     return accessKey;
   }
 
+  public boolean isAllowComment() {
+     return allowComment;
+  }
+
   public String getDescription() {
     return description;
   }
@@ -110,5 +125,10 @@ public abstract class RevisionControlOperation<R> {
     return name;
   }
 
-  public abstract R execute(RevisionController revisionController, String pagePath);
+  public R execute(RevisionController revisionController, String pagePath) {
+     return execute(revisionController, pagePath, new HashMap<String, String>());
+
+  }
+
+  public abstract R execute(RevisionController revisionController, String pagePath, Map<String, String> args);
 }

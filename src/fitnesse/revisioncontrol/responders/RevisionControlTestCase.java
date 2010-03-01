@@ -104,6 +104,14 @@ public abstract class RevisionControlTestCase extends TestCase {
     return fileSystemPath(folderPath(page));
   }
 
+  protected String contentFilePathFor(final String page) throws Exception {
+    return fileSystemPath(folderPath(page) + FileSystemPage.contentFilename);
+  }
+
+  protected String propertyFilePathFor(final String page) throws Exception {
+    return fileSystemPath(folderPath(page) + FileSystemPage.propertiesFilename);
+  }
+   
   private String folderPath(final String page) {
     return ROOT + "/ExternalRoot" + fullPageName(page, "/");
   }

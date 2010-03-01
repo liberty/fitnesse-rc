@@ -24,7 +24,7 @@ public class CheckinResponderTest extends RevisionControlTestCase {
   }
 
   public void testShouldAskRevisionControllerToCheckinPage() throws Exception {
-    expect(revisionController.checkin(filePathFor(FS_PARENT_PAGE))).
+    expect(revisionController.checkin(filePathFor(FS_PARENT_PAGE), "")).
       andReturn(new TestNewRevisionResults(1234, OperationStatus.SUCCESS));
     replay(revisionController);
     createPage(FS_PARENT_PAGE);
@@ -37,7 +37,7 @@ public class CheckinResponderTest extends RevisionControlTestCase {
   }
 
   public void testShouldAskRevisionControllerToCheckinPageWithNothingToDo() throws Exception {
-    expect(revisionController.checkin(filePathFor(FS_PARENT_PAGE))).
+    expect(revisionController.checkin(filePathFor(FS_PARENT_PAGE), "")).
       andReturn(new TestNewRevisionResults(-1, OperationStatus.NOTHING_TO_DO));
     replay(revisionController);
     createPage(FS_PARENT_PAGE);
@@ -49,7 +49,7 @@ public class CheckinResponderTest extends RevisionControlTestCase {
 
   public void testShouldReportErrorMsgIfCheckinOperationFails() throws Exception {
     final String errorMsg = "Cannot checkin files to Revision Control";
-    revisionController.checkin(filePathFor(FS_PARENT_PAGE));
+    revisionController.checkin(filePathFor(FS_PARENT_PAGE), "");
     expectLastCall().andThrow(new RevisionControlException(errorMsg));
     replay(revisionController);
 

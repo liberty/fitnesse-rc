@@ -18,8 +18,6 @@ import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiPage;
 
 public class RevisionsResponder extends BasicResponder {
-  public static final String COMMENT_FIELD = "comment";
-
   private static final String TITLE = "Revision Control";
 
   private String resource;
@@ -31,7 +29,6 @@ public class RevisionsResponder extends BasicResponder {
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
     resource = request.getResource();
 
-    String resource = request.getResource();
     WikiPagePath path = PathParser.parse(resource);
     WikiPage page = context.root.getPageCrawler().getPage(context.root, path);
     if (page == null) {
@@ -64,34 +61,20 @@ public class RevisionsResponder extends BasicResponder {
 
   public TagGroup makeHtmlForOperation(RevisionControlOperation operation) {
     TagGroup group = makeContent(operation.getName(), operation.getDescription());
-    group.add(makeForm(operation.getQuery(), operation.getName()));
+    group.add(makeForm(operation.getQuery(), operation.getName(), operation.isAllowComment()));
     group.add(HtmlUtil.HR);
     return group;
   }
 
-  private HtmlTag makeForm(String responderName, String buttonCaption) {
+  private HtmlTag makeForm(String responderName, String buttonCaption, boolean allowComment) {
     HtmlTag form = HtmlUtil.makeFormTag("post", resource);
     form.add(HtmlUtil.makeInputTag("hidden", "responder", responderName));
+    if (allowComment) {
+      HtmlTag table = makeTable();
+      addTableRow(table, new HtmlElement[]{new RawHtml("Comment: "), makeCommentTextarea()});
+      form.add(table);
+    }
     form.add(HtmlUtil.makeInputTag("submit", "", buttonCaption));
-    return form;
-  }
-
-  private HtmlTag makeCheckinContent() throws Exception {
-    TagGroup group = makeContent("Checkin:", "Put changes to this sub-wiki into version control.");
-    group.add(makeCheckinForm());
-    return group;
-  }
-
-  private HtmlTag makeCheckinForm() throws Exception {
-    HtmlTag form = HtmlUtil.makeFormTag("post", resource);
-    form.add(HtmlUtil.makeInputTag("hidden", "responder", "versioncommit"));
-
-    HtmlTag table = makeTable();
-    addTableRow(table, new HtmlElement[]{new RawHtml("Checkin Comment: "), makeCommitTextarea()});
-    form.add(table);
-
-    form.add(HtmlUtil.makeInputTag("submit", "", "Commit"));
-
     return form;
   }
 
@@ -120,9 +103,9 @@ public class RevisionsResponder extends BasicResponder {
     table.add(row);
   }
 
-  private HtmlTag makeCommitTextarea() {
+  private HtmlTag makeCommentTextarea() {
     HtmlTag textarea = new HtmlTag("textarea");
-    textarea.addAttribute("name", COMMENT_FIELD);
+    textarea.addAttribute("name", RevisionControlResponder.COMMENT_FIELD);
     textarea.addAttribute("rows", "3");
     textarea.addAttribute("cols", "50");
     textarea.add(Utils.escapeHTML(""));
