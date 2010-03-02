@@ -1,12 +1,14 @@
 package fitnesse.revisioncontrol;
 
+import fitnesse.html.HtmlElement;
 import fitnesse.wiki.WikiPageAction;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static fitnesse.revisioncontrol.CheckinOperationHtmlBuilder.COMMIT_MESSAGE;
+
 public abstract class RevisionControlOperation<R> {
-  public static final String MESSAGE_ARG = "message";
 
   public static final RevisionControlOperation<Results> ADD =
     new RevisionControlOperation<Results>("Add", "addToRevisionControl", "a", "Add this sub-wiki to revision control") {
@@ -45,11 +47,16 @@ public abstract class RevisionControlOperation<R> {
     };
 
   public static final RevisionControlOperation<NewRevisionResults> CHECKIN =
-    new RevisionControlOperation<NewRevisionResults>("Checkin", "checkin", "i", "Put changes to this page into version control.", true) {
+    new RevisionControlOperation<NewRevisionResults>("Checkin", "checkin", "i", "Put changes to this page into version control.") {
 
       @Override
       public NewRevisionResults execute(RevisionController revisionController, String pagePath, Map<String, String> args) {
-        return revisionController.checkin(pagePath, args.containsKey(MESSAGE_ARG) ? args.get(MESSAGE_ARG) : "");
+        return revisionController.checkin(pagePath, args.containsKey(COMMIT_MESSAGE) ? args.get(COMMIT_MESSAGE) : "");
+      }
+
+      @Override
+      public HtmlElement makeHtml(String resource) {
+        return new CheckinOperationHtmlBuilder(this).makeHtml(resource);
       }
     };
 
@@ -74,7 +81,6 @@ public abstract class RevisionControlOperation<R> {
   private final String query;
   private final String accessKey;
   private final String name;
-  private final boolean allowComment;
   private String description;
 
   protected RevisionControlOperation(String name, String query, String accessKey) {
@@ -82,22 +88,21 @@ public abstract class RevisionControlOperation<R> {
   }
 
    public RevisionControlOperation(String name, String query, String accessKey, String description) {
-     this(name, query, accessKey, description, false);
+      this.name = name;
+      this.query = query;
+      this.accessKey = accessKey;
+      this.description = description;
    }
-
-  public RevisionControlOperation(String name, String query, String accessKey, String description, boolean allowComment) {
-    this.name = name;
-    this.query = query;
-    this.accessKey = accessKey;
-    this.description = description;
-    this.allowComment = allowComment;
-  }
 
   public WikiPageAction makeAction(String pageName) {
     WikiPageAction action = new WikiPageAction(pageName, name);
     action.setQuery(query);
     action.setShortcutKey(accessKey);
     return action;
+  }
+
+  public HtmlElement makeHtml(String resource) {
+    return new RevisionControlOperationHtmlBuilder(this).makeHtml(resource);
   }
 
   public String getName() {
@@ -110,10 +115,6 @@ public abstract class RevisionControlOperation<R> {
 
   public String getAccessKey() {
     return accessKey;
-  }
-
-  public boolean isAllowComment() {
-     return allowComment;
   }
 
   public String getDescription() {
@@ -131,4 +132,5 @@ public abstract class RevisionControlOperation<R> {
   }
 
   public abstract R execute(RevisionController revisionController, String pagePath, Map<String, String> args);
+
 }

@@ -21,9 +21,6 @@ import java.util.List;
 public abstract class RevisionControlResponder extends BasicResponder {
   private final RevisionControlOperation operation;
   protected String rootPagePath;
-  protected String comment;
-
-  public static final String COMMENT_FIELD = "comment";
 
   protected RevisionControlResponder(RevisionControlOperation operation) {
     this.operation = operation;
@@ -31,7 +28,6 @@ public abstract class RevisionControlResponder extends BasicResponder {
 
   public Response makeResponse(FitNesseContext context, Request request) throws Exception {
     rootPagePath = new File(context.rootPagePath).getAbsolutePath();
-    comment = (String) request.getInput(COMMENT_FIELD);
 
     WikiPage root = context.root;
     PageCrawler crawler = root.getPageCrawler();

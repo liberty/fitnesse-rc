@@ -11,7 +11,6 @@ import fitnesse.FitNesseContext;
 import fitnesse.revisioncontrol.State;
 import fitnesse.revisioncontrol.RevisionControllable;
 import fitnesse.revisioncontrol.RevisionControlOperation;
-import fitnesse.wikitext.Utils;
 import fitnesse.html.*;
 import fitnesse.wiki.WikiPagePath;
 import fitnesse.wiki.PathParser;
@@ -36,80 +35,26 @@ public class RevisionsResponder extends BasicResponder {
     }
 
     SimpleResponse response = new SimpleResponse();
-    response.setContent(makeHtml(context, page));
+    response.setContent(makeHtml(context, page).html());
     return response;
   }
 
-  public String makeHtml(FitNesseContext context, WikiPage wikiPage) throws Exception {
-    HtmlPage html = context.htmlPageFactory.newPage();
-    html.title.use(TITLE + ": " + resource);
-    html.header.use(HtmlUtil.makeBreadCrumbsWithPageType(resource, TITLE));
-    html.main.use(makePageContent(wikiPage));
-    return html.html();
+  protected HtmlElement makeHtml(FitNesseContext context, WikiPage wikiPage) throws Exception {
+    HtmlPage htmlPage = context.htmlPageFactory.newPage();
+    htmlPage.title.use(TITLE + ": " + resource);
+    htmlPage.header.use(HtmlUtil.makeBreadCrumbsWithPageType(resource, TITLE));
+    htmlPage.main.use(makePageHtml(wikiPage));
+    return htmlPage;
   }
 
-  private HtmlTag makePageContent(WikiPage wikiPage) {
+  protected HtmlTag makePageHtml(WikiPage wikiPage) {
     TagGroup group = new TagGroup();
 
     final State state = ((RevisionControllable) wikiPage).getState();
     final RevisionControlOperation[] operations = state.operations();
-    for (final RevisionControlOperation operation : operations)
-      group.add(makeHtmlForOperation(operation));
-
-    return group;
-  }
-
-  public TagGroup makeHtmlForOperation(RevisionControlOperation operation) {
-    TagGroup group = makeContent(operation.getName(), operation.getDescription());
-    group.add(makeForm(operation.getQuery(), operation.getName(), operation.isAllowComment()));
-    group.add(HtmlUtil.HR);
-    return group;
-  }
-
-  private HtmlTag makeForm(String responderName, String buttonCaption, boolean allowComment) {
-    HtmlTag form = HtmlUtil.makeFormTag("post", resource);
-    form.add(HtmlUtil.makeInputTag("hidden", "responder", responderName));
-    if (allowComment) {
-      HtmlTag table = makeTable();
-      addTableRow(table, new HtmlElement[]{new RawHtml("Comment: "), makeCommentTextarea()});
-      form.add(table);
+    for (final RevisionControlOperation operation : operations) {
+      group.add(operation.makeHtml(resource));
     }
-    form.add(HtmlUtil.makeInputTag("submit", "", buttonCaption));
-    return form;
-  }
-
-  private TagGroup makeContent(String header, String description) {
-    TagGroup group = new TagGroup();
-    group.add(new HtmlTag("h3", header));
-    group.add(description);
     return group;
-  }
-
-  private HtmlTag makeTable() {
-    HtmlTag table = new HtmlTag("table");
-    table.addAttribute("border", "0");
-    table.addAttribute("cellspacing", "0");
-    table.addAttribute("class", "dirListing");
-    return table;
-  }
-
-  private void addTableRow(HtmlTag table, HtmlElement[] rowItems) {
-    HtmlTag row = new HtmlTag("tr");
-
-    for (HtmlElement rowItem : rowItems) {
-      HtmlTag cell = new HtmlTag("td", rowItem);
-      row.add(cell);
-    }
-    table.add(row);
-  }
-
-  private HtmlTag makeCommentTextarea() {
-    HtmlTag textarea = new HtmlTag("textarea");
-    textarea.addAttribute("name", RevisionControlResponder.COMMENT_FIELD);
-    textarea.addAttribute("rows", "3");
-    textarea.addAttribute("cols", "50");
-    textarea.add(Utils.escapeHTML(""));
-
-    return textarea;
   }
 }
