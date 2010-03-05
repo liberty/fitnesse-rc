@@ -6,7 +6,6 @@ import fitnesse.html.HtmlUtil;
 import fitnesse.html.TagGroup;
 import fitnesse.revisioncontrol.CheckinOperationHtmlBuilder;
 import fitnesse.revisioncontrol.RevisionControlOperation;
-import fitnesse.revisioncontrol.responders.CheckinResponder;
 import fitnesse.wiki.PathParser;
 import fitnesse.wiki.WikiPage;
 import fitnesse.wiki.WikiPagePath;
