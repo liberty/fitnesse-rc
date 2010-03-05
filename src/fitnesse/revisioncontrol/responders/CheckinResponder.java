@@ -7,18 +7,23 @@ import fitnesse.http.Request;
 import fitnesse.http.Response;
 import fitnesse.revisioncontrol.NewRevisionResults;
 import fitnesse.revisioncontrol.OperationStatus;
+import fitnesse.revisioncontrol.RevisionControlDetail;
+import fitnesse.revisioncontrol.svn.client.SVNEventActionTags;
 import fitnesse.revisioncontrol.wiki.RevisionControlledFileSystemPage;
+import org.tmatesoft.svn.core.wc.SVNEventAction;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import static fitnesse.revisioncontrol.CheckinOperationHtmlBuilder.CLEAR_FROM_PARENT_CACHE;
+import static fitnesse.revisioncontrol.CheckinOperationHtmlBuilder.CHECKIN_FOR_DELETED_PAGE;
 import static fitnesse.revisioncontrol.CheckinOperationHtmlBuilder.COMMIT_MESSAGE;
 import static fitnesse.revisioncontrol.RevisionControlOperation.CHECKIN;
+import static org.tmatesoft.svn.core.wc.SVNEventAction.COMMIT_DELETED;
 
 public class CheckinResponder extends RevisionControlResponder {
   private String commitMessage;
-  private boolean clearCacheChildrenInParent;
+  private boolean checkinForDeletedPage;
 
    public CheckinResponder() {
     super(CHECKIN);
@@ -27,7 +32,7 @@ public class CheckinResponder extends RevisionControlResponder {
    @Override
    public Response makeResponse(FitNesseContext context, Request request) throws Exception {
      commitMessage = (String) request.getInput(COMMIT_MESSAGE);
-     clearCacheChildrenInParent = isClearParentCacheRequested(request);
+     checkinForDeletedPage = isCheckinForDeletedPage(request);
      return super.makeResponse(context, request);
    }
 
@@ -36,7 +41,10 @@ public class CheckinResponder extends RevisionControlResponder {
     Map<String, String> checkinArgs = new HashMap<String, String>();
     checkinArgs.put(COMMIT_MESSAGE, commitMessage != null ? commitMessage : "");
     NewRevisionResults results = page.execute(CHECKIN, checkinArgs);
-    if (clearCacheChildrenInParent) {
+    if (anyChildPageDeleteCheckedIn(results)) {
+       page.clearCachedChildren();
+    }
+    if (checkinForDeletedPage) {
        clearCachedChildrenForParent(page);
     }
     makeResultsHtml(results, tag);
@@ -62,9 +70,18 @@ public class CheckinResponder extends RevisionControlResponder {
       }
    }
 
-   private boolean isClearParentCacheRequested(Request request) {
-      String clearParentCache = (String) request.getInput(CLEAR_FROM_PARENT_CACHE);
-      return "yes".equalsIgnoreCase(clearParentCache);
+   private boolean isCheckinForDeletedPage(Request request) {
+      return "yes".equalsIgnoreCase((String) request.getInput(CHECKIN_FOR_DELETED_PAGE));
+   }
+
+   private boolean anyChildPageDeleteCheckedIn(NewRevisionResults results) {
+     List<RevisionControlDetail> revisionControlDetailList = results.getDetails();
+     for (RevisionControlDetail detail : revisionControlDetailList) {
+       if (detail.getActionTags().contains(SVNEventActionTags.getTag(COMMIT_DELETED))) {
+         return true;
+       }
+     }
+     return false;
    }
 
 }

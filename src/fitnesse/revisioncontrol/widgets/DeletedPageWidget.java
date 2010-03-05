@@ -14,7 +14,6 @@ import fitnesse.wikitext.widgets.ParentWidget;
 
 import java.util.List;
 
-import static fitnesse.revisioncontrol.CheckinOperationHtmlBuilder.CLEAR_FROM_PARENT_CACHE;
 import static fitnesse.revisioncontrol.RevisionControlOperation.CHECKIN;
 
 public class DeletedPageWidget extends WikiWidget {
@@ -67,7 +66,7 @@ public class DeletedPageWidget extends WikiWidget {
       @Override
       protected List<HtmlTag> getHtmlTagsToAddToForm() {
          List<HtmlTag> tags = super.getHtmlTagsToAddToForm();
-         tags.add(HtmlUtil.makeInputTag("hidden", CLEAR_FROM_PARENT_CACHE, "yes"));
+         tags.add(HtmlUtil.makeInputTag("hidden", CHECKIN_FOR_DELETED_PAGE, "yes"));
          return tags;
       }
    }
