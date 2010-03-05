@@ -158,7 +158,11 @@ public class SVNClient {
   public State getState(File pagePath) {
     SVNStatusType status;
     try {
-      status = doLocalStatus(pagePath).getContentsStatus();
+       SVNStatus svnStatus = doLocalStatus(pagePath);
+       if (svnStatus == null) {
+         return SVNState.UNKNOWN;
+       }
+       status = svnStatus.getContentsStatus();
     } catch (SVNException e) {
       return SVNState.UNKNOWN;
     }
@@ -172,10 +176,9 @@ public class SVNClient {
   }
 
    public boolean hasLocalLock(File pagePath) {
-      SVNStatusType status;
       try {
          SVNStatus svnStatus = doLocalStatus(pagePath);
-         return svnStatus.getLocalLock() != null;
+         return svnStatus != null && svnStatus.getLocalLock() != null;
       } catch (SVNException e) {
          throw new RevisionControlException(pagePath + " is in an unknown state. Can not determine local lock ownership.");
       }

@@ -1,6 +1,6 @@
 package fitnesse.revisioncontrol;
 
-import fitnesse.html.HtmlElement;
+import fitnesse.html.HtmlTag;
 import fitnesse.wiki.WikiPageAction;
 
 import java.util.HashMap;
@@ -55,7 +55,7 @@ public abstract class RevisionControlOperation<R> {
       }
 
       @Override
-      public HtmlElement makeHtml(String resource) {
+      public HtmlTag makeHtml(String resource) {
         return new CheckinOperationHtmlBuilder(this).makeHtml(resource);
       }
     };
@@ -101,7 +101,7 @@ public abstract class RevisionControlOperation<R> {
     return action;
   }
 
-  public HtmlElement makeHtml(String resource) {
+  public HtmlTag makeHtml(String resource) {
     return new RevisionControlOperationHtmlBuilder(this).makeHtml(resource);
   }
 

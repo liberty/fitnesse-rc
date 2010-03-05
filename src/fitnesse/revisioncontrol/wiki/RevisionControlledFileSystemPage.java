@@ -145,4 +145,7 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
      return new File(getFileSystemPath() + propertiesFilename).getAbsolutePath();
    }
 
+   public void clearCachedChildren() {
+      children.clear();
+   }
 }

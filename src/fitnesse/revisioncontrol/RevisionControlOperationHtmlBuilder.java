@@ -19,7 +19,7 @@ public class RevisionControlOperationHtmlBuilder {
       this.operation = operation;
    }
 
-   public HtmlElement makeHtml(String resource) {
+   public HtmlTag makeHtml(String resource) {
      TagGroup group = new TagGroup();
      group.add(new HtmlTag("h3", operation.getName()));
      group.add(operation.getDescription());
