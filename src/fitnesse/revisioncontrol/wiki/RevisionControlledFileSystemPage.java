@@ -13,6 +13,13 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
 
   private RevisionController revisioner;
 
+  private static final String ERROR_LOGS_NAME = "ErrorLogs";
+  private static final String RECENT_CHANGES_NAME = "RecentChanges";
+
+  private static final String ADD_ON_SAVE_PROP = "RevisionController.addOnSave";
+  protected static boolean addOnSave = false;
+
+
   public RevisionControlledFileSystemPage(final String path, final String name, 
                                           final ComponentFactory componentFactory) throws Exception {
     super(path, name, null, new NullVersionsController());
@@ -35,19 +42,38 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
     if (revisionController == null) {
       throw new IllegalStateException("A RevisionController must be configured in the FitNesse properties");
     }
+    addOnSave = Boolean.valueOf(factory.getProperty(ADD_ON_SAVE_PROP));
     return revisionController;
   }
 
   @Override
   public void doCommit(PageData data) throws Exception {
+    if (isTransientPage())
+    {
+      super.doCommit(data);
+      return;
+    }
+
+    // Check before save since we need to know if it a new page
+    boolean needToAddToRevisionControl = addOnSave && !pageExists();
+
     super.doCommit(data);
 
-    if (getState().isUnderRevisionControl() && !hasLocalLock()) {
+    if (needToAddToRevisionControl)
+    {
+       revisioner.add(getAbsoluteFileSystemPath());
+    }
+    else if (getState().isCheckedIn() && !hasLocalLock())
+    {
       revisioner.lock(getAbsoluteFileSystemPath());
     }
   }
 
-  @Override
+   private boolean pageExists() {
+      return getContentFile().exists() && getPropertiesFile().exists();
+   }
+
+   @Override
   public PageData makePageData() throws Exception {
     PageData data = super.makePageData();
     if (isDeleted(data))
@@ -138,14 +164,29 @@ public class RevisionControlledFileSystemPage extends FileSystemPage implements 
    }
    
    public String getAbsoluteFileSystemPathForContentFile() {
-     return new File(getFileSystemPath() + contentFilename).getAbsolutePath();
+     return getContentFile().getAbsolutePath();
+   }
+
+   private File getContentFile() {
+      return new File(getFileSystemPath() + contentFilename);
    }
 
    public String getAbsoluteFileSystemPathForPropertiesFile() {
-     return new File(getFileSystemPath() + propertiesFilename).getAbsolutePath();
+     return getPropertiesFile().getAbsolutePath();
+   }
+
+   private File getPropertiesFile() {
+      return new File(getFileSystemPath() + propertiesFilename);
    }
 
    public void clearCachedChildren() {
       children.clear();
    }
+
+   private boolean isTransientPage() throws Exception
+   {
+      return getName().startsWith(ERROR_LOGS_NAME) || getName().equals(RECENT_CHANGES_NAME);
+   }
+
+
 }

@@ -1,6 +1,8 @@
 package fitnesse.revisioncontrol.wiki;
 
+import fitnesse.revisioncontrol.NullState;
 import fitnesse.revisioncontrol.Results;
+
 import static fitnesse.revisioncontrol.NullState.VERSIONED;
 import static fitnesse.revisioncontrol.NullState.UNKNOWN;
 import fitnesse.revisioncontrol.responders.RevisionControlTestCase;
@@ -15,6 +17,7 @@ public class RevisionControlledFileSystemPageTest extends RevisionControlTestCas
   protected void setUp() throws Exception {
     super.setUp();
 
+    RevisionControlledFileSystemPage.addOnSave = false;
     createExternalRoot();
   }
 
@@ -38,6 +41,24 @@ public class RevisionControlledFileSystemPageTest extends RevisionControlTestCas
     parentPage.commit(parentPage.getData());
   }
 
+   public void testCommitWillNotAddAndNotLockPageIfNewPageAndAddOnSaveSetToFalse() throws Exception {
+     RevisionControlledFileSystemPage.addOnSave = false;
+     expectStateOfPageIs(FS_PARENT_PAGE, UNKNOWN);
+     replay(revisionController);
+
+     createPage(FS_PARENT_PAGE);
+     parentPage.commit(parentPage.getData());
+   }
+
+   public void testCommitWillAddAndNotLockPageIfNewPageAndAddOnSaveSetToTrue() throws Exception {
+     RevisionControlledFileSystemPage.addOnSave = true;
+     expectStateOfPageIs(FS_PARENT_PAGE, UNKNOWN);
+     expect(revisionController.add(filePathFor(FS_PARENT_PAGE))).andReturn(new Results());
+     replay(revisionController);
+
+     createPage(FS_PARENT_PAGE);
+     parentPage.commit(parentPage.getData());
+   }
 
   public void testCreateChildPageWillCreateRevisionControlledPage() throws Exception {
     replay(revisionController);
